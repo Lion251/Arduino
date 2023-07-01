@@ -1,0 +1,128 @@
+##############################################################
+
+leonardo.name=Arduino Leonardo with 512 bytes Rx buffer
+leonardo.vid.0=0x2341
+leonardo.pid.0=0x0036
+leonardo.vid.1=0x2341
+leonardo.pid.1=0x8036
+leonardo.vid.2=0x2A03
+leonardo.pid.2=0x0036
+leonardo.vid.3=0x2A03
+leonardo.pid.3=0x8036
+
+leonardo.upload.tool=arduino:avrdude
+leonardo.upload.protocol=avr109
+leonardo.upload.maximum_size=28672
+leonardo.upload.maximum_data_size=2560
+leonardo.upload.speed=57600
+leonardo.upload.disable_flushing=true
+leonardo.upload.use_1200bps_touch=true
+leonardo.upload.wait_for_upload_port=true
+
+#leonardo.bootloader.tool=arduino:avrdude
+#leonardo.bootloader.low_fuses=0xff
+#leonardo.bootloader.high_fuses=0xd8
+#leonardo.bootloader.extended_fuses=0xcb
+#leonardo.bootloader.file=caterina/Caterina-Leonardo.hex
+#leonardo.bootloader.unlock_bits=0x3F
+#leonardo.bootloader.lock_bits=0x2F
+
+leonardo.build.mcu=atmega32u4
+leonardo.build.f_cpu=16000000L
+leonardo.build.vid=0x2341
+leonardo.build.pid=0x8036
+leonardo.build.usb_product="Arduino Leonardo"
+leonardo.build.board=AVR_LEONARDO
+leonardo.build.core=arduino:arduino
+leonardo.build.variant=arduino:leonardo
+leonardo.build.extra_flags={build.usb_flags} -DSERIAL_RX_BUFFER_SIZE=512
+
+##############################################################
+
+menu.chip=Chip
+menu.clock=Clock
+menu.bod=B.O.D.
+menu.vcc=Voltage
+menu.pinmapping=Pin Mapping
+menu.INITIALIZE_SECONDARY_TIMERS=Initialize Secondary Timers
+menu.TimerClockSource=Timer 1 Clock
+
+
+attinyx5.name=ATtiny x5 series - Hi-res PWM
+attinyx5.upload.maximum_size=8192
+attinyx5.upload.maximum_data_size=512
+attinyx5.upload.tool=arduino:avrdude
+attinyx5.bootloader.tool=arduino:avrdude
+attinyx5.bootloader.unlock_bits=0xFF
+attinyx5.bootloader.lock_bits=0xFF
+attinyx5.build.core=tiny
+attinyx5.build.board=AVR_ATTINYX5
+attinyx5.bootloader.extended_fuses=0xFF
+attinyx5.menu.TimerClockSource.default=CPU
+attinyx5.menu.TimerClockSource.pll=64MHz
+attinyx5.menu.TimerClockSource.pll.build.extra_flags=-DPLLTIMER1
+attinyx5.menu.TimerClockSource.lowpll=32MHz
+attinyx5.menu.TimerClockSource.lowpll.build.extra_flags=-DLOWPLLTIMER1
+attinyx5.menu.chip.85=ATtiny85
+attinyx5.menu.chip.85.build.mcu=attiny85
+attinyx5.menu.chip.85.upload.maximum_size=8192
+attinyx5.menu.chip.85.upload.maximum_data_size=512
+attinyx5.menu.chip.45=ATtiny45
+attinyx5.menu.chip.45.build.mcu=attiny45
+attinyx5.menu.chip.45.upload.maximum_size=4096
+attinyx5.menu.chip.45.upload.maximum_data_size=256
+attinyx5.menu.chip.25=ATtiny25
+attinyx5.menu.chip.25.build.mcu=attiny25
+attinyx5.menu.chip.25.upload.maximum_size=2048
+attinyx5.menu.chip.25.upload.maximum_data_size=128
+attinyx5.menu.clock.8internal=8 MHz (internal)
+attinyx5.menu.clock.8internal.bootloader.low_fuses=0xE2
+attinyx5.menu.clock.8internal.build.f_cpu=8000000L
+attinyx5.menu.clock.8internal.bootloader.file=empty/empty_all.hex
+attinyx5.menu.clock.16pll=16 MHz (PLL)
+attinyx5.menu.clock.16pll.bootloader.low_fuses=0xF1
+attinyx5.menu.clock.16pll.build.f_cpu=16000000L
+attinyx5.menu.clock.16pll.bootloader.file=empty/empty_all.hex
+attinyx5.menu.clock.20external=20 MHz (external)
+attinyx5.menu.clock.20external.bootloader.low_fuses=0xFF
+attinyx5.menu.clock.20external.build.f_cpu=20000000L
+attinyx5.menu.clock.20external.bootloader.file=empty/empty_all.hex
+attinyx5.menu.clock.16external=16 MHz (external)
+attinyx5.menu.clock.16external.bootloader.low_fuses=0xFF
+attinyx5.menu.clock.16external.build.f_cpu=16000000L
+attinyx5.menu.clock.16external.bootloader.file=empty/empty_all.hex
+attinyx5.menu.clock.12external=12 MHz (external)
+attinyx5.menu.clock.12external.bootloader.low_fuses=0xFF
+attinyx5.menu.clock.12external.build.f_cpu=12000000L
+attinyx5.menu.clock.12external.bootloader.file=empty/empty_all.hex
+attinyx5.menu.clock.8external=8 MHz (external)
+attinyx5.menu.clock.8external.bootloader.low_fuses=0xFF
+attinyx5.menu.clock.8external.build.f_cpu=8000000L
+attinyx5.menu.clock.8external.bootloader.file=empty/empty_all.hex
+attinyx5.menu.clock.6external=6 MHz (external)
+attinyx5.menu.clock.6external.bootloader.low_fuses=0xFD
+attinyx5.menu.clock.6external.build.f_cpu=6000000L
+attinyx5.menu.clock.6external.bootloader.file=empty/empty_all.hex
+attinyx5.menu.clock.4external=4 MHz (external)
+attinyx5.menu.clock.4external.bootloader.low_fuses=0xFD
+attinyx5.menu.clock.4external.build.f_cpu=4000000L
+attinyx5.menu.clock.4external.bootloader.file=empty/empty_all.hex
+attinyx5.menu.clock.1internal=1 MHz (internal)
+attinyx5.menu.clock.1internal.bootloader.low_fuses=0x62
+attinyx5.menu.clock.1internal.build.f_cpu=1000000L
+attinyx5.menu.clock.1internal.bootloader.file=empty/empty_all.hex
+attinyx5.menu.clock.128internal=128 kHz (internal)
+attinyx5.menu.clock.128internal.bootloader.low_fuses=0xC4
+attinyx5.menu.clock.128internal.build.f_cpu=128000L
+attinyx5.menu.clock.128internal.bootloader.file=empty/empty_all.hex
+attinyx5.menu.bod.disable=B.O.D. Disabled
+attinyx5.menu.bod.disable.bootloader.high_fuses=0xD7
+attinyx5.menu.bod.1v8=B.O.D. Enabled (1.8v)
+attinyx5.menu.bod.1v8.bootloader.high_fuses=0xD6
+attinyx5.menu.bod.2v7=B.O.D. Enabled (2.7v)
+attinyx5.menu.bod.2v7.bootloader.high_fuses=0xD5
+attinyx5.menu.bod.4v3=B.O.D. Enabled (4.3v)
+attinyx5.menu.bod.4v3.bootloader.high_fuses=0xD4
+attinyx5.build.variant=tinyX5
+
+
