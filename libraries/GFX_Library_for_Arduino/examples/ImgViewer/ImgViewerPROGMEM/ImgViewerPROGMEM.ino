@@ -4,10 +4,11 @@
  * Image Source: https://support.arduino.cc/hc/en-us/articles/360020652100
  *
  * How to create custom image:
- * 1. Open image ith GIMP
- * 2. Export Image as C-Source
- * 3. Uncheck all option and check "Save as RGB565 (16-bit)"
- * 4. Revise exported file just like "Arduino_UNO_Rev3_Ok.c"
+ * 1. Open image in the GIMP
+ * 2. Resize image to fit for the display and MCU memory
+ * 3. Export Image as C-Source
+ * 4. Uncheck all option and check "Save as RGB565 (16-bit)"
+ * 5. Revise exported file just like "Arduino_UNO_Rev3_Ok.c"
  ******************************************************************************/
 #include "Arduino_UNO_Rev3_Ok.c"
 #define IMG_WIDTH 100
@@ -55,21 +56,21 @@ Arduino_GFX *gfx = new Arduino_ILI9341(bus, DF_GFX_RST, 3 /* rotation */, false 
 
 void setup()
 {
+#ifdef DEV_DEVICE_INIT
+  DEV_DEVICE_INIT();
+#endif
+
   Serial.begin(115200);
   // Serial.setDebugOutput(true);
   // while(!Serial);
-  Serial.println("PROGMEM Image Viewer");
-
-#ifdef GFX_EXTRA_PRE_INIT
-  GFX_EXTRA_PRE_INIT();
-#endif
+  Serial.println("Arduino_GFX PROGMEM Image Viewer example");
 
   // Init Display
   if (!gfx->begin())
   {
     Serial.println("gfx->begin() failed!");
   }
-  gfx->fillScreen(BLACK);
+  gfx->fillScreen(RGB565_BLACK);
 
 #ifdef GFX_BL
   pinMode(GFX_BL, OUTPUT);

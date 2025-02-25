@@ -4,7 +4,7 @@ RgbwwColor provides a color object that can be directly consumed by NeoPixelBus
 Written by Michael C. Miller.
 
 I invest time and resources providing this open source code,
-please support me by dontating (see https://github.com/Makuna/NeoPixelBus)
+please support me by donating (see https://github.com/Makuna/NeoPixelBus)
 
 -------------------------------------------------------------------------
 This file is part of the Makuna/NeoPixelBus library.
@@ -141,51 +141,51 @@ void RgbwwColor::Lighten(uint8_t delta)
 {
     if (IsColorLess())
     {
-        if (WW < 255 - delta)
+        if (WW < Max - delta)
         {
             WW += delta;
         }
         else
         {
-            WW = 255;
+            WW = Max;
         }
 
-        if (CW < 255 - delta)
+        if (CW < Max - delta)
         {
             CW += delta;
         }
         else
         {
-            CW = 255;
+            CW = Max;
         }
     }
     else
     {
-        if (R < 255 - delta)
+        if (R < Max - delta)
         {
             R += delta;
         }
         else
         {
-            R = 255;
+            R = Max;
         }
 
-        if (G < 255 - delta)
+        if (G < Max - delta)
         {
             G += delta;
         }
         else
         {
-            G = 255;
+            G = Max;
         }
 
-        if (B < 255 - delta)
+        if (B < Max - delta)
         {
             B += delta;
         }
         else
         {
-            B = 255;
+            B = Max;
         }
     }
 }

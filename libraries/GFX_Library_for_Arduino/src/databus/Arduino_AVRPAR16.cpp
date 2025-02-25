@@ -7,11 +7,8 @@ Arduino_AVRPAR16::Arduino_AVRPAR16(int8_t dc, int8_t cs, int8_t wr, int8_t rd, u
 {
 }
 
-bool Arduino_AVRPAR16::begin(int32_t speed, int8_t dataMode)
+bool Arduino_AVRPAR16::begin(int32_t, int8_t)
 {
-  UNUSED(speed);
-  UNUSED(dataMode);
-
   pinMode(_dc, OUTPUT);
   digitalWrite(_dc, HIGH); // Data mode
   _dcPort = (PORTreg_t)portOutputRegister(digitalPinToPort(_dc));
@@ -37,15 +34,7 @@ bool Arduino_AVRPAR16::begin(int32_t speed, int8_t dataMode)
   {
     pinMode(_rd, OUTPUT);
     digitalWrite(_rd, HIGH); // Disable RD
-    _rdPort = (PORTreg_t)portOutputRegister(digitalPinToPort(_rd));
-    _rdPinMaskSet = digitalPinToBitMask(_rd);
   }
-  else
-  {
-    _rdPort = _dcPort;
-    _rdPinMaskSet = 0;
-  }
-  _rdPinMaskClr = ~_rdPinMaskSet;
 
   *(portModeRegister(_portLow)) = 0xFF;
   _dataPortLow = portOutputRegister(_portLow);
@@ -82,6 +71,18 @@ void Arduino_AVRPAR16::writeCommand16(uint16_t c)
   DC_LOW();
 
   WRITE16(c);
+
+  DC_HIGH();
+}
+
+void Arduino_AVRPAR16::writeCommandBytes(uint8_t *data, uint32_t len)
+{
+  DC_LOW();
+
+  while (len--)
+  {
+    WRITE16(*data++);
+  }
 
   DC_HIGH();
 }
@@ -186,7 +187,22 @@ void Arduino_AVRPAR16::writeC8D16D16Split(uint8_t c, uint16_t d1, uint16_t d2)
   *_wrPort = wrMaskBase | _wrPinMaskSet;
 }
 
-INLINE void Arduino_AVRPAR16::WRITE16(uint16_t d)
+void Arduino_AVRPAR16::writeBytes(uint8_t *data, uint32_t len)
+{
+  while (len > 1)
+  {
+    _data16.msb = *data++;
+    _data16.lsb = *data++;
+    WRITE16(_data16.value);
+    len -= 2;
+  }
+  if (len)
+  {
+    WRITE16(*data);
+  }
+}
+
+GFX_INLINE void Arduino_AVRPAR16::WRITE16(uint16_t d)
 {
   uint8_t wrMaskBase = *_wrPort & _wrPinMaskClr;
   _data16.value = d;
@@ -198,17 +214,17 @@ INLINE void Arduino_AVRPAR16::WRITE16(uint16_t d)
 
 /******** low level bit twiddling **********/
 
-INLINE void Arduino_AVRPAR16::DC_HIGH(void)
+GFX_INLINE void Arduino_AVRPAR16::DC_HIGH(void)
 {
   *_dcPort |= _dcPinMaskSet;
 }
 
-INLINE void Arduino_AVRPAR16::DC_LOW(void)
+GFX_INLINE void Arduino_AVRPAR16::DC_LOW(void)
 {
   *_dcPort &= _dcPinMaskClr;
 }
 
-INLINE void Arduino_AVRPAR16::CS_HIGH(void)
+GFX_INLINE void Arduino_AVRPAR16::CS_HIGH(void)
 {
   if (_cs != GFX_NOT_DEFINED)
   {
@@ -216,7 +232,7 @@ INLINE void Arduino_AVRPAR16::CS_HIGH(void)
   }
 }
 
-INLINE void Arduino_AVRPAR16::CS_LOW(void)
+GFX_INLINE void Arduino_AVRPAR16::CS_LOW(void)
 {
   if (_cs != GFX_NOT_DEFINED)
   {

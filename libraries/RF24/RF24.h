@@ -12,8 +12,8 @@
  * Class declaration for RF24 and helper enums
  */
 
-#ifndef __RF24_H__
-#define __RF24_H__
+#ifndef RF24_H_
+#define RF24_H_
 
 #include "RF24_config.h"
 
@@ -110,6 +110,26 @@ typedef enum
 
 /**
  * @}
+ * @defgroup fifoState FIFO state
+ * The state of a single FIFO (RX or TX).
+ * Remember, each FIFO has a maximum occupancy of 3 payloads.
+ * @see RF24::isFifo()
+ * @{
+ */
+typedef enum
+{
+    /// @brief The FIFO is not full nor empty, but it is occupied with 1 or 2 payloads.
+    RF24_FIFO_OCCUPIED,
+    /// @brief The FIFO is empty.
+    RF24_FIFO_EMPTY,
+    /// @brief The FIFO is full.
+    RF24_FIFO_FULL,
+    /// @brief Represents corruption of data over SPI (when observed).
+    RF24_FIFO_INVALID,
+} rf24_fifo_state_e;
+
+/**
+ * @}
  * @brief Driver class for nRF24L01(+) 2.4GHz Wireless Transceiver
  */
 class RF24
@@ -127,9 +147,6 @@ private:
 #if defined(RF24_SPI_PTR)
     _SPI* _spi;
 #endif // defined (RF24_SPI_PTR)
-#if defined(MRAA)
-    GPIO gpio;
-#endif
 
     rf24_gpio_pin_t ce_pin;  /* "Chip Enable" pin, activates the RX or TX role */
     rf24_gpio_pin_t csn_pin; /* SPI Chip select */
@@ -255,7 +272,7 @@ public:
      * @param spiBus A pointer or reference to an instantiated SPI bus object.
      * The `_SPI` datatype is a "wrapped" definition that will represent
      * various SPI implementations based on the specified platform.
-     * @see Review the [Arduino support page](md_docs_arduino.html).
+     * @see Review the [Arduino support page](arduino.md).
      *
      * @return same result as begin()
      */
@@ -278,7 +295,7 @@ public:
      * - For the Arduino Due board, the [Arduino Due extended SPI feature](https://www.arduino.cc/en/Reference/DueExtendedSPI)
      * is not supported. This means that the Due's pins 4, 10, or 52 are not mandated options (can use any digital output pin) for the radio's CSN pin.
      *
-     * @see Review the [Arduino support page](md_docs_arduino.html).
+     * @see Review the [Arduino support page](arduino.md).
      *
      * @return same result as begin()
      */
@@ -788,13 +805,15 @@ public:
     /**
      * @param about_tx `true` focuses on the TX FIFO, `false` focuses on the RX FIFO
      * @return
-     * - `0` if the specified FIFO is neither full nor empty.
-     * - `1` if the specified FIFO is empty.
-     * - `2` if the specified FIFO is full.
+     * - @ref RF24_FIFO_OCCUPIED (`0`) if the specified FIFO is neither full nor empty.
+     * - @ref RF24_FIFO_EMPTY (`1`) if the specified FIFO is empty.
+     * - @ref RF24_FIFO_FULL (`2`) if the specified FIFO is full.
+     * - @ref RF24_FIFO_INVALID (`3`) if the data fetched over SPI was malformed.
      */
-    uint8_t isFifo(bool about_tx);
+    rf24_fifo_state_e isFifo(bool about_tx);
 
     /**
+     * @deprecated Use RF24::isFifo(bool about_tx) instead.
      * @param about_tx `true` focuses on the TX FIFO, `false` focuses on the RX FIFO
      * @param check_empty
      * - `true` checks if the specified FIFO is empty
@@ -878,7 +897,7 @@ public:
      * to clear by issuing txStandBy() or ensure appropriate time between transmissions.
      *
      * Use txStandBy() when this function returns `false`.
-     * 
+     *
      * Example (Partial blocking):
      * @code
      * radio.writeFast(&buf,32);  // Writes 1 payload to the buffers
@@ -1277,11 +1296,11 @@ public:
      * @code
      * bool goodSignal = radio.testRPD();
      * if(radio.available()){
-     *    Serial.println(goodSignal ? "Strong signal > 64dBm" : "Weak signal < 64dBm" );
-     *    radio.read(0,0);
+     *    Serial.println(goodSignal ? "Strong signal > -64dBm" : "Weak signal < -64dBm" );
+     *    radio.read(&payload,sizeof(payload));
      * }
      * @endcode
-     * @return true if a signal less than or equal to -64dBm was detected,
+     * @return true if a signal greater than or equal to -64dBm was detected,
      * false if not.
      */
     bool testRPD(void);
@@ -1361,7 +1380,7 @@ public:
      * (ACK) packet during the delay between retry attempts.
      *
      * @param delay How long to wait between each retry, in multiples of
-     * 250 us. The minumum of 0 means 250 us, and the maximum of 15 means
+     * 250 us. The minimum of 0 means 250 us, and the maximum of 15 means
      * 4000 us. The default value of 5 means 1500us (5 * 250 + 250).
      * @param count How many retries before giving up. The default/maximum is 15. Use
      * 0 to disable the auto-retry feature all together.
@@ -1749,7 +1768,7 @@ public:
      *
      * On all devices but Linux and ATTiny, a small delay is added to the CSN toggling function
      *
-     * This is intended to minimise the speed of SPI polling due to radio commands
+     * This is intended to minimize the speed of SPI polling due to radio commands
      *
      * If using interrupts or timed requests, this can be set to 0 Default:5
      */
@@ -1792,7 +1811,7 @@ public:
      * @brief Open or close all data pipes.
      *
      * This function does not alter the addresses assigned to pipes. It is simply a
-     * convenience function that allows controling all pipes at once.
+     * convenience function that allows controlling all pipes at once.
      * @param isEnabled `true` opens all pipes; `false` closes all pipes.
      */
     void toggleAllPipes(bool isEnabled);
@@ -1932,12 +1951,10 @@ private:
      *
      * @param reg Which register. Use constants from nRF24L01.h
      * @param value The new value to write
-     * @param is_cmd_only if this parameter is true, then the `reg` parameter
-     * is written, and the `value` param is ignored.
      * @return Nothing. Older versions of this function returned the status
      * byte, but that it now saved to a private member on all SPI transactions.
      */
-    void write_register(uint8_t reg, uint8_t value, bool is_cmd_only = false);
+    void write_register(uint8_t reg, uint8_t value);
 
     /**
      * Write the transmit payload
@@ -2236,7 +2253,7 @@ private:
  *
  * This is a simple example of using the RF24 class on a Raspberry Pi.
  *
- * Remember to install the [Python wrapper](md_docs_python_wrapper.html), then
+ * Remember to install the [Python wrapper](python_wrapper.md), then
  * navigate to the "RF24/examples_linux" folder.
  * <br>To run this example, enter
  * @code{.sh}python3 getting_started.py @endcode and follow the prompts.
@@ -2252,7 +2269,7 @@ private:
  * This is a simple example of using the RF24 class on a Raspberry Pi to
  * transmit and retrieve custom automatic acknowledgment payloads.
  *
- * Remember to install the [Python wrapper](md_docs_python_wrapper.html), then
+ * Remember to install the [Python wrapper](python_wrapper.md), then
  * navigate to the "RF24/examples_linux" folder.
  * <br>To run this example, enter
  * @code{.sh}python3 acknowledgement_payloads.py @endcode and follow the prompts.
@@ -2271,7 +2288,7 @@ private:
  * payloads because automatic ACK payloads' data will always be outdated by 1
  * transmission. Instead, this example uses a call and response paradigm.
  *
- * Remember to install the [Python wrapper](md_docs_python_wrapper.html), then
+ * Remember to install the [Python wrapper](python_wrapper.md), then
  * navigate to the "RF24/examples_linux" folder.
  * <br>To run this example, enter
  * @code{.sh}python3 manual_acknowledgements.py @endcode and follow the prompts.
@@ -2287,7 +2304,7 @@ private:
  * This is a simple example of using the RF24 class on a Raspberry Pi for
  * streaming multiple payloads.
  *
- * Remember to install the [Python wrapper](md_docs_python_wrapper.html), then
+ * Remember to install the [Python wrapper](python_wrapper.md), then
  * navigate to the "RF24/examples_linux" folder.
  * <br>To run this example, enter
  * @code{.sh}python3 streaming_data.py @endcode and follow the prompts.
@@ -2303,7 +2320,7 @@ private:
  * This is a simple example of using the RF24 class on a Raspberry Pi to
  * detecting (and verifying) the IRQ (interrupt) pin on the nRF24L01.
  *
- * Remember to install the [Python wrapper](md_docs_python_wrapper.html), then
+ * Remember to install the [Python wrapper](python_wrapper.md), then
  * navigate to the "RF24/examples_linux" folder.
  * <br>To run this example, enter
  * @code{.sh}python3 interrupt_configure.py @endcode and follow the prompts.
@@ -2320,7 +2337,7 @@ private:
  * using 1 nRF24L01 to receive data from up to 6 other transceivers. This
  * technique is called "multiceiver" in the datasheet.
  *
- * Remember to install the [Python wrapper](md_docs_python_wrapper.html), then
+ * Remember to install the [Python wrapper](python_wrapper.md), then
  * navigate to the "RF24/examples_linux" folder.
  * <br>To run this example, enter
  * @code{.sh}python3 multiceiver_demo.py @endcode and follow the prompts.
@@ -2415,4 +2432,4 @@ private:
  * Use `ctrl+c` to quit at any time.
  */
 
-#endif // __RF24_H__
+#endif // RF24_H_

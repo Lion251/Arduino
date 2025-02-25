@@ -1,5 +1,5 @@
 /*
- * FreeRTOS Kernel V10.5.1+
+ * FreeRTOS Kernel V11.1.0
  * Copyright (C) 2021 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
  *
  * SPDX-License-Identifier: MIT
@@ -42,10 +42,10 @@
  *----------------------------------------------------------*/
 
 /* Start tasks with interrupts enabled. */
-#define portFLAGS_INT_ENABLED           ( (StackType_t) 0x80 )
+#define portFLAGS_INT_ENABLED    ( ( StackType_t ) 0x80 )
 
 #if defined( portUSE_WDTO )
-    #define portSCHEDULER_ISR           WDT_vect
+    #define portSCHEDULER_ISR    WDT_vect
 
 #else
     #warning "The user must define a Timer to be used for the Scheduler."
@@ -54,27 +54,27 @@
 /*-----------------------------------------------------------*/
 
 /* We require the address of the pxCurrentTCB variable, but don't want to know
-any details of its type. */
+ * any details of its type. */
 typedef void TCB_t;
 extern volatile TCB_t * volatile pxCurrentTCB;
 
 /*-----------------------------------------------------------*/
 
 /**
-    Enable the watchdog timer, configuring it for expire after
-    (value) timeout (which is a combination of the WDP0
-    through WDP3 bits).
-
-    This function is derived from <avr/wdt.h> but enables only
-    the interrupt bit (WDIE), rather than the reset bit (WDE).
-
-    Can't find it documented but the WDT, once enabled,
-    rolls over and fires a new interrupt each time.
-
-    See also the symbolic constants WDTO_15MS et al.
-
-    Updated to match avr-libc 2.0.0
-*/
+ *  Enable the watchdog timer, configuring it for expire after
+ *  (value) timeout (which is a combination of the WDP0
+ *  through WDP3 bits).
+ *
+ *  This function is derived from <avr/wdt.h> but enables only
+ *  the interrupt bit (WDIE), rather than the reset bit (WDE).
+ *
+ *  Can't find it documented but the WDT, once enabled,
+ *  rolls over and fires a new interrupt each time.
+ *
+ *  See also the symbolic constants WDTO_15MS et al.
+ *
+ *  Updated to match avr-libc 2.0.0
+ */
 
 #if defined( portUSE_WDTO )
 
@@ -117,30 +117,31 @@ void wdt_interrupt_enable (const uint8_t value)
         );
     }
 }
-#endif
+#endif /* if defined( portUSE_WDTO ) */
 
 /*-----------------------------------------------------------*/
+
 /**
-    Enable the watchdog timer, configuring it for expire after
-    (value) timeout (which is a combination of the WDP0
-    through WDP3 bits).
-
-    This function is derived from <avr/wdt.h> but enables both
-    the reset bit (WDE), and the interrupt bit (WDIE).
-
-    This will ensure that if the interrupt is not serviced
-    before the second timeout, the AVR will reset.
-
-    Servicing the interrupt automatically clears it,
-    and ensures the AVR does not reset.
-
-    Can't find it documented but the WDT, once enabled,
-    rolls over and fires a new interrupt each time.
-
-    See also the symbolic constants WDTO_15MS et al.
-
-    Updated to match avr-libc 2.0.0
-*/
+ *  Enable the watchdog timer, configuring it for expire after
+ *  (value) timeout (which is a combination of the WDP0
+ *  through WDP3 bits).
+ *
+ *  This function is derived from <avr/wdt.h> but enables both
+ *  the reset bit (WDE), and the interrupt bit (WDIE).
+ *
+ *  This will ensure that if the interrupt is not serviced
+ *  before the second timeout, the AVR will reset.
+ *
+ *  Servicing the interrupt automatically clears it,
+ *  and ensures the AVR does not reset.
+ *
+ *  Can't find it documented but the WDT, once enabled,
+ *  rolls over and fires a new interrupt each time.
+ *
+ *  See also the symbolic constants WDTO_15MS et al.
+ *
+ *  Updated to match avr-libc 2.0.0
+ */
 
 #if defined( portUSE_WDTO )
 
@@ -183,7 +184,7 @@ void wdt_interrupt_reset_enable (const uint8_t value)
         );
     }
 }
-#endif
+#endif /* if defined( portUSE_WDTO ) */
 
 /*-----------------------------------------------------------*/
 /* actual number of ticks per second, after configuration. Not for RTC, which has 1 tick/second. */
@@ -317,7 +318,7 @@ volatile TickType_t ticksRemainingInSec;
                                 "in     __tmp_reg__, __SP_H__                   \n\t"   \
                                 "st     x+, __tmp_reg__                         \n\t"   \
                              );
-#else
+#else /* if defined( __AVR_3_BYTE_PC__ ) && defined( __AVR_HAVE_RAMPZ__ ) */
 /* 2-Byte PC Save */
 #define portSAVE_CONTEXT()                                                              \
         __asm__ __volatile__ (  "push   __tmp_reg__                             \n\t"   \
@@ -363,7 +364,7 @@ volatile TickType_t ticksRemainingInSec;
                                 "in     __tmp_reg__, __SP_H__                   \n\t"   \
                                 "st     x+, __tmp_reg__                         \n\t"   \
                              );
-#endif
+#endif /* if defined( __AVR_3_BYTE_PC__ ) && defined( __AVR_HAVE_RAMPZ__ ) */
 
 /*
  * Opposite to portSAVE_CONTEXT().  Interrupts will have been disabled during
@@ -463,7 +464,7 @@ volatile TickType_t ticksRemainingInSec;
                                 "out    __SREG__, __tmp_reg__                   \n\t"   \
                                 "pop    __tmp_reg__                             \n\t"   \
                              );
-#else
+#else /* if defined( __AVR_3_BYTE_PC__ ) && defined( __AVR_HAVE_RAMPZ__ ) */
 /* 2-Byte PC Restore */
 #define portRESTORE_CONTEXT()                                                           \
         __asm__ __volatile__ (  "lds    r26, pxCurrentTCB                       \n\t"   \
@@ -507,7 +508,7 @@ volatile TickType_t ticksRemainingInSec;
                                 "out    __SREG__, __tmp_reg__                   \n\t"   \
                                 "pop    __tmp_reg__                             \n\t"   \
                              );
-#endif
+#endif /* if defined( __AVR_3_BYTE_PC__ ) && defined( __AVR_HAVE_RAMPZ__ ) */
 /*-----------------------------------------------------------*/
 
 /*
@@ -519,14 +520,17 @@ void prvSetupTimerInterrupt( void );
 /*
  * See header file for description.
  */
-StackType_t *pxPortInitialiseStack( StackType_t *pxTopOfStack, TaskFunction_t pxCode, void *pvParameters )
+StackType_t * pxPortInitialiseStack( StackType_t * pxTopOfStack,
+                                     TaskFunction_t pxCode,
+                                     void * pvParameters )
 {
 uint16_t usAddress;
+
     /* Simulate how the stack would look after a call to vPortYield() generated by
-    the compiler. */
+     * the compiler. */
 
     /* The start of the task code will be popped off the stack last, so place
-    it on first. */
+     * it on first. */
     usAddress = ( uint16_t ) pxCode;
     *pxTopOfStack = ( StackType_t ) ( usAddress & ( uint16_t ) 0x00ff );
     pxTopOfStack--;
@@ -536,6 +540,7 @@ uint16_t usAddress;
     pxTopOfStack--;
 
 #if defined(__AVR_3_BYTE_PC__)
+
     /* The AVR ATmega2560/ATmega2561 have 256KBytes of program memory and a 17-bit
      * program counter. When a code address is stored on the stack, it takes 3 bytes
      * instead of 2 for the other ATmega* chips.
@@ -551,15 +556,16 @@ uint16_t usAddress;
 #endif
 
     /* Next simulate the stack as if after a call to portSAVE_CONTEXT().
-    portSAVE_CONTEXT places the flags on the stack immediately after r0
-    to ensure the interrupts get disabled as soon as possible, and so ensuring
-    the stack use is minimal should a context switch interrupt occur. */
-    *pxTopOfStack = ( StackType_t ) 0x00;    /* R0 */
+     * portSAVE_CONTEXT places the flags on the stack immediately after r0
+     * to ensure the interrupts get disabled as soon as possible, and so ensuring
+     *  the stack use is minimal should a context switch interrupt occur. */
+    *pxTopOfStack = ( StackType_t ) 0x00; /* R0 */
     pxTopOfStack--;
     *pxTopOfStack = portFLAGS_INT_ENABLED;
     pxTopOfStack--;
 
 #if defined(__AVR_3_BYTE_PC__)
+
     /* If we have an ATmega256x, we are also saving the EIND register.
      * We should default to 0.
      */
@@ -568,6 +574,7 @@ uint16_t usAddress;
 #endif
 
 #if defined(__AVR_HAVE_RAMPZ__)
+
     /* We are saving the RAMPZ register.
      * We should default to 0.
      */
@@ -605,7 +612,7 @@ BaseType_t xPortStartScheduler( void )
     portRESTORE_CONTEXT();
 
     /* Simulate a function call end as generated by the compiler. We will now
-    jump to the start of the task the context of which we have just restored. */
+     * jump to the start of the task the context of which we have just restored. */
     __asm__ __volatile__ ( "ret" );
 
     /* Should not get here. */
@@ -622,15 +629,15 @@ void vPortEndScheduler( void )
 }
 /*-----------------------------------------------------------*/
 
-    /*
-     * Choose which delay function to use.
-     * Arduino delay() is a millisecond granularity busy wait, that
-     * that breaks FreeRTOS. So its use is limited to less than one
-     * System Tick (portTICK_PERIOD_MS milliseconds).
-     * FreeRTOS vTaskDelay() is relies on the System Tick which here
-     * has a granularity of portTICK_PERIOD_MS milliseconds (15ms),
-     * with the remainder implemented as an Arduino delay().
-     */
+/*
+ * Choose which delay function to use.
+ * Arduino delay() is a millisecond granularity busy wait, that
+ * that breaks FreeRTOS. So its use is limited to less than one
+ * System Tick (portTICK_PERIOD_MS milliseconds).
+ * FreeRTOS vTaskDelay() is relies on the System Tick which here
+ * has a granularity of portTICK_PERIOD_MS milliseconds (15ms),
+ * with the remainder implemented as an Arduino delay().
+ */
 
 #ifdef delay
 #undef delay
@@ -639,7 +646,7 @@ void vPortEndScheduler( void )
 extern void delay ( unsigned long ms );
 
 #if defined( portUSE_WDTO )
-void vPortDelay( const uint32_t ms ) __attribute__ ((hot, flatten));
+void vPortDelay( const uint32_t ms ) __attribute__ ( ( hot, flatten ) );
 void vPortDelay( const uint32_t ms )
 {
     if ( ms < portTICK_PERIOD_MS )
@@ -648,14 +655,14 @@ void vPortDelay( const uint32_t ms )
     }
     else
     {
-        vTaskDelay( (TickType_t) (ms) / portTICK_PERIOD_MS );
-        delay( (unsigned long) (ms - portTICK_PERIOD_MS) % portTICK_PERIOD_MS );
+        vTaskDelay( (TickType_t) (ms / portTICK_PERIOD_MS) );
+        delay( (unsigned long) ( (ms - portTICK_PERIOD_MS) % portTICK_PERIOD_MS ) );
     }
 }
 #else
 #warning "The user is responsible to provide function `vPortDelay()`"
 #warning "Arduino uses all AVR MCU Timers, so breakage may occur"
-extern void vPortDelay( const uint32_t ms ) __attribute__ ((hot, flatten));
+extern void vPortDelay( const uint32_t ms ) __attribute__ ( ( hot, flatten ) );
 #endif
 /*-----------------------------------------------------------*/
 
@@ -663,7 +670,7 @@ extern void vPortDelay( const uint32_t ms ) __attribute__ ((hot, flatten));
  * Manual context switch. The first thing we do is save the registers so we
  * can use a naked attribute.
  */
-void vPortYield( void ) __attribute__ ((hot, flatten, naked));
+void vPortYield( void ) __attribute__( ( hot, flatten, naked ) );
 void vPortYield( void )
 {
     portSAVE_CONTEXT();
@@ -678,7 +685,7 @@ void vPortYield( void )
  * Manual context switch callable from ISRs. The first thing we do is save
  * the registers so we can use a naked attribute.
  */
-void vPortYieldFromISR( void ) __attribute__ ((hot, flatten, naked));
+void vPortYieldFromISR( void ) __attribute__( ( hot, flatten, naked ) );
 void vPortYieldFromISR( void )
 {
     portSAVE_CONTEXT();
@@ -695,7 +702,7 @@ void vPortYieldFromISR( void )
  * difference from vPortYield() is the tick count is incremented as the
  * call comes from the tick ISR.
  */
-void vPortYieldFromTick( void ) __attribute__ ((hot, flatten, naked));
+void vPortYieldFromTick( void ) __attribute__( ( hot, flatten, naked ) );
 void vPortYieldFromTick( void )
 {
     portSAVE_CONTEXT();
@@ -704,6 +711,7 @@ void vPortYieldFromTick( void )
     {
         vTaskSwitchContext();
     }
+
     portRESTORE_CONTEXT();
 
     __asm__ __volatile__ ( "ret" );
@@ -711,21 +719,22 @@ void vPortYieldFromTick( void )
 /*-----------------------------------------------------------*/
 
 #if defined( portUSE_WDTO )
-/*
- * Setup WDT to generate a tick interrupt.
- */
-void prvSetupTimerInterrupt( void )
-{
-    /* reset watchdog */
-    wdt_reset();
 
-    /* set up WDT Interrupt (rather than the WDT Reset). */
-    wdt_interrupt_enable( portUSE_WDTO );
-}
+    /*
+     * Setup WDT to generate a tick interrupt.
+     */
+    void prvSetupTimerInterrupt( void )
+    {
+        /* reset watchdog */
+        wdt_reset();
+
+        /* set up WDT Interrupt (rather than the WDT Reset). */
+        wdt_interrupt_enable( portUSE_WDTO );
+    }
 
 #else
-#warning "The user is responsible to provide function `prvSetupTimerInterrupt()`"
-extern void prvSetupTimerInterrupt( void );
+    #warning "The user is responsible to provide function `prvSetupTimerInterrupt()`"
+    extern void prvSetupTimerInterrupt( void );
 #endif
 
 /*-----------------------------------------------------------*/
@@ -740,15 +749,16 @@ extern void prvSetupTimerInterrupt( void );
      * use ISR_NOBLOCK where there is an important timer running, that should preempt the scheduler.
      *
      */
-    ISR(portSCHEDULER_ISR, ISR_NAKED) __attribute__ ((hot, flatten));
-/*  ISR(portSCHEDULER_ISR, ISR_NAKED ISR_NOBLOCK) __attribute__ ((hot, flatten));
+    ISR( portSCHEDULER_ISR, ISR_NAKED ) __attribute__ ( ( hot, flatten ) );
+
+/*  ISR( portSCHEDULER_ISR, ISR_NAKED ISR_NOBLOCK ) __attribute__ ( ( hot, flatten ) );
  */
-    ISR(portSCHEDULER_ISR)
+    ISR( portSCHEDULER_ISR )
     {
         vPortYieldFromTick();
         __asm__ __volatile__ ( "reti" );
     }
-#else
+#else /* if configUSE_PREEMPTION == 1 */
 
     /*
      * Tick ISR for the cooperative scheduler. All this does is increment the
@@ -757,11 +767,12 @@ extern void prvSetupTimerInterrupt( void );
      *
      * use ISR_NOBLOCK where there is an important timer running, that should preempt the scheduler.
      */
-    ISR(portSCHEDULER_ISR) __attribute__ ((hot, flatten));
-/*  ISR(portSCHEDULER_ISR, ISR_NOBLOCK) __attribute__ ((hot, flatten));
+    ISR( portSCHEDULER_ISR ) __attribute__ ( ( hot, flatten ) );
+
+/*  ISR( portSCHEDULER_ISR, ISR_NOBLOCK ) __attribute__ ( ( hot, flatten ) );
  */
-    ISR(portSCHEDULER_ISR)
+    ISR( portSCHEDULER_ISR )
     {
         xTaskIncrementTick();
     }
-#endif
+#endif /* if configUSE_PREEMPTION == 1 */

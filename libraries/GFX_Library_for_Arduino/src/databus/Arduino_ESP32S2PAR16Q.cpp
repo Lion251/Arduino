@@ -14,14 +14,14 @@ bool Arduino_ESP32S2PAR16Q::begin(int32_t speed, int8_t dataMode)
   if (_dc >= 32)
   {
     _dcPinMask = digitalPinToBitMask(_dc);
-    _dcPortSet = (PORTreg_t)&GPIO.out1_w1ts.val;
-    _dcPortClr = (PORTreg_t)&GPIO.out1_w1tc.val;
+    _dcPortSet = (PORTreg_t)GPIO_OUT1_W1TS_REG;
+    _dcPortClr = (PORTreg_t)GPIO_OUT1_W1TC_REG;
   }
   else
   {
     _dcPinMask = digitalPinToBitMask(_dc);
-    _dcPortSet = (PORTreg_t)&GPIO.out_w1ts;
-    _dcPortClr = (PORTreg_t)&GPIO.out_w1tc;
+    _dcPortSet = (PORTreg_t)GPIO_OUT_W1TS_REG;
+    _dcPortClr = (PORTreg_t)GPIO_OUT_W1TC_REG;
   }
 
   if (_cs != GFX_NOT_DEFINED)
@@ -32,14 +32,14 @@ bool Arduino_ESP32S2PAR16Q::begin(int32_t speed, int8_t dataMode)
   if (_cs >= 32)
   {
     _csPinMask = digitalPinToBitMask(_cs);
-    _csPortSet = (PORTreg_t)&GPIO.out1_w1ts.val;
-    _csPortClr = (PORTreg_t)&GPIO.out1_w1tc.val;
+    _csPortSet = (PORTreg_t)GPIO_OUT1_W1TS_REG;
+    _csPortClr = (PORTreg_t)GPIO_OUT1_W1TC_REG;
   }
   else if (_cs != GFX_NOT_DEFINED)
   {
     _csPinMask = digitalPinToBitMask(_cs);
-    _csPortSet = (PORTreg_t)&GPIO.out_w1ts;
-    _csPortClr = (PORTreg_t)&GPIO.out_w1tc;
+    _csPortSet = (PORTreg_t)GPIO_OUT_W1TS_REG;
+    _csPortClr = (PORTreg_t)GPIO_OUT_W1TC_REG;
   }
 
   pinMode(_wr, OUTPUT);
@@ -47,14 +47,14 @@ bool Arduino_ESP32S2PAR16Q::begin(int32_t speed, int8_t dataMode)
   if (_wr >= 32)
   {
     _wrPinMask = digitalPinToBitMask(_wr);
-    _wrPortSet = (PORTreg_t)&GPIO.out1_w1ts.val;
-    _wrPortClr = (PORTreg_t)&GPIO.out1_w1tc.val;
+    _wrPortSet = (PORTreg_t)GPIO_OUT1_W1TS_REG;
+    _wrPortClr = (PORTreg_t)GPIO_OUT1_W1TC_REG;
   }
   else
   {
     _wrPinMask = digitalPinToBitMask(_wr);
-    _wrPortSet = (PORTreg_t)&GPIO.out_w1ts;
-    _wrPortClr = (PORTreg_t)&GPIO.out_w1tc;
+    _wrPortSet = (PORTreg_t)GPIO_OUT_W1TS_REG;
+    _wrPortClr = (PORTreg_t)GPIO_OUT_W1TC_REG;
   }
 
   if (_rd != GFX_NOT_DEFINED)
@@ -82,8 +82,8 @@ bool Arduino_ESP32S2PAR16Q::begin(int32_t speed, int8_t dataMode)
 
   // INIT 16-bit mask
   _dataClrMask = (1 << _wr) | 0xFFFF;
-  _dataPortSet = (PORTreg_t)&GPIO.out_w1ts;
-  _dataPortClr = (PORTreg_t)&GPIO.out_w1tc;
+  _dataPortSet = (PORTreg_t)GPIO_OUT_W1TS_REG;
+  _dataPortClr = (PORTreg_t)GPIO_OUT_W1TC_REG;
   *_dataPortClr = _dataClrMask;
 
   return true;
@@ -114,6 +114,18 @@ void Arduino_ESP32S2PAR16Q::writeCommand16(uint16_t c)
   DC_LOW();
 
   WRITE16(c);
+
+  DC_HIGH();
+}
+
+void Arduino_ESP32S2PAR16Q::writeCommandBytes(uint8_t *data, uint32_t len)
+{
+  DC_LOW();
+
+  while (len--)
+  {
+    WRITE(*data++);
+  }
 
   DC_HIGH();
 }
@@ -213,14 +225,6 @@ void Arduino_ESP32S2PAR16Q::writeBytes(uint8_t *data, uint32_t len)
   }
 }
 
-void Arduino_ESP32S2PAR16Q::writePattern(uint8_t *data, uint8_t len, uint32_t repeat)
-{
-  while (repeat--)
-  {
-    writeBytes(data, len);
-  }
-}
-
 void Arduino_ESP32S2PAR16Q::writeIndexedPixels(uint8_t *data, uint16_t *idx, uint32_t len)
 {
   while (len--)
@@ -241,14 +245,14 @@ void Arduino_ESP32S2PAR16Q::writeIndexedPixelsDouble(uint8_t *data, uint16_t *id
   }
 }
 
-INLINE void Arduino_ESP32S2PAR16Q::WRITE(uint8_t d)
+GFX_INLINE void Arduino_ESP32S2PAR16Q::WRITE(uint8_t d)
 {
   *_dataPortClr = _dataClrMask;
   *_dataPortSet = d;
   *_wrPortSet = _wrPinMask;
 }
 
-INLINE void Arduino_ESP32S2PAR16Q::WRITE16(uint16_t d)
+GFX_INLINE void Arduino_ESP32S2PAR16Q::WRITE16(uint16_t d)
 {
   *_dataPortClr = _dataClrMask;
   *_dataPortSet = d;
@@ -257,17 +261,17 @@ INLINE void Arduino_ESP32S2PAR16Q::WRITE16(uint16_t d)
 
 /******** low level bit twiddling **********/
 
-INLINE void Arduino_ESP32S2PAR16Q::DC_HIGH(void)
+GFX_INLINE void Arduino_ESP32S2PAR16Q::DC_HIGH(void)
 {
   *_dcPortSet = _dcPinMask;
 }
 
-INLINE void Arduino_ESP32S2PAR16Q::DC_LOW(void)
+GFX_INLINE void Arduino_ESP32S2PAR16Q::DC_LOW(void)
 {
   *_dcPortClr = _dcPinMask;
 }
 
-INLINE void Arduino_ESP32S2PAR16Q::CS_HIGH(void)
+GFX_INLINE void Arduino_ESP32S2PAR16Q::CS_HIGH(void)
 {
   if (_cs != GFX_NOT_DEFINED)
   {
@@ -275,7 +279,7 @@ INLINE void Arduino_ESP32S2PAR16Q::CS_HIGH(void)
   }
 }
 
-INLINE void Arduino_ESP32S2PAR16Q::CS_LOW(void)
+GFX_INLINE void Arduino_ESP32S2PAR16Q::CS_LOW(void)
 {
   if (_cs != GFX_NOT_DEFINED)
   {

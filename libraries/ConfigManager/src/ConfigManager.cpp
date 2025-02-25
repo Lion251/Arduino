@@ -120,13 +120,15 @@ void ConfigManager::startAP() {
   DebugPrintln(F("Starting Access Point"));
 
   WiFi.mode(WIFI_AP);
-  WiFi.softAP(apName, apPassword);
-
-  delay(500);  // Need to wait to get IP
 
   IPAddress ip(192, 168, 1, 1);
   IPAddress NMask(255, 255, 255, 0);
   WiFi.softAPConfig(ip, ip, NMask);
+
+  // Need to wait on config
+  delay(500);
+
+  WiFi.softAP(apName, apPassword);
 
   DebugPrint("AP Name: ");
   DebugPrintln(apName);
@@ -413,6 +415,7 @@ void ConfigManager::clearSettings(bool reboot) {
 // ConfigManager HTTP Utilities
 //
 void ConfigManager::startWebserver() {
+  this->server->enableCORS(true);
   this->server->begin();
   this->webserverRunning = true;
 }
@@ -489,8 +492,8 @@ void ConfigManager::handleAPPost() {
   if (isJson) {
     JsonObject obj = decodeJson(server->arg("plain"));
 
-    ssid = obj.getMember("ssid").as<String>();
-    password = obj.getMember("password").as<String>();
+    ssid = String((const char*)obj["ssid"]);
+    password = String((const char*)obj["password"]);
   } else {
     ssid = server->arg("ssid");
     password = server->arg("password");
@@ -542,6 +545,10 @@ void ConfigManager::handleSettingsPutREST() {
 }
 
 void ConfigManager::handleNotFound() {
+  if (server->method() == HTTP_OPTIONS) {
+    server->send(200);
+  }
+
   String URI =
       toStringIP(server->client().localIP()) + String(":") + String(webPort);
   String header = server->hostHeader();

@@ -17,18 +17,6 @@
 #include <FastLED.h>
 #include <TaskManager.h>
 
-namespace led {
-#if ARX_HAVE_LIBSTDCPLUSPLUS >= 201103L  // Have libstdc++11
-template <typename T>
-using Vec = std::vector<T>;
-using namespace std;
-#else
-template <typename T>
-using Vec = arx::vector<T>;
-using namespace arx;
-#endif
-}  // namespace led
-
 #include "FastLEDManager/LEDController.h"
 #include "FastLEDManager/LEDSequencer.h"
 
@@ -233,7 +221,7 @@ public:
 
 }  // namespace led
 
-#define $LED led::Manager::get()
+#define LEDMNGR led::Manager::get()
 
 #include <DebugLogRestoreState.h>
 

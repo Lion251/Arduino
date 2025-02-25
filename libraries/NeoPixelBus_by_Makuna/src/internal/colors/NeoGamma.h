@@ -5,7 +5,7 @@ across all color channels
 Written by Michael C. Miller.
 
 I invest time and resources providing this open source code,
-please support me by dontating (see https://github.com/Makuna/NeoPixelBus)
+please support me by donating (see https://github.com/Makuna/NeoPixelBus)
 
 -------------------------------------------------------------------------
 This file is part of the Makuna/NeoPixelBus library.
@@ -65,6 +65,34 @@ public:
             T_METHOD::Correct(original.G),
             T_METHOD::Correct(original.B),
             T_METHOD::Correct(original.W));
+    }
+
+    static RgbwwColor Correct(const RgbwwColor& original)
+    {
+        return RgbwwColor(T_METHOD::Correct(original.R),
+            T_METHOD::Correct(original.G),
+            T_METHOD::Correct(original.B),
+            T_METHOD::Correct(original.WW),
+            T_METHOD::Correct(original.CW));
+    }
+
+    static Rgbww80Color Correct(const Rgbww80Color& original)
+    {
+        return Rgbww80Color(T_METHOD::Correct(original.R),
+            T_METHOD::Correct(original.G),
+            T_METHOD::Correct(original.B),
+            T_METHOD::Correct(original.WW),
+            T_METHOD::Correct(original.CW));
+    }
+
+    static RgbwwwColor Correct(const RgbwwwColor& original)
+    {
+        return RgbwwwColor(T_METHOD::Correct(original.R),
+            T_METHOD::Correct(original.G),
+            T_METHOD::Correct(original.B),
+            T_METHOD::Correct(original.W1),
+            T_METHOD::Correct(original.W2),
+            T_METHOD::Correct(original.W3));
     }
 };
 

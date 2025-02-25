@@ -4,7 +4,7 @@ NeoPixelBus library wrapper template class that provides luminance and gamma con
 Written by Michael C. Miller.
 
 I invest time and resources providing this open source code,
-please support me by dontating (see https://github.com/Makuna/NeoPixelBus)
+please support me by donating (see https://github.com/Makuna/NeoPixelBus)
 
 -------------------------------------------------------------------------
 This file is part of the Makuna/NeoPixelBus library.
@@ -74,9 +74,16 @@ public:
     protected:
         uint8_t _luminance;
 
-        void setLuminance(uint8_t luminance)
+        bool setLuminance(uint8_t luminance)
         {
-            _luminance = luminance;
+            bool different = (_luminance != luminance);
+
+            if (different)
+            {
+                _luminance = luminance;
+            }
+            
+            return different;
         }
 
         uint8_t getLuminance() const
@@ -126,6 +133,12 @@ public:
     {
     }
 
+     NeoPixelBusLg(uint16_t countPixels, Stream* pixieStream) :
+        NeoPixelBus<T_COLOR_FEATURE, T_METHOD>(countPixels, pixieStream),
+        Shader()
+    {
+    }
+
     ~NeoPixelBusLg()
     {
     }
@@ -135,7 +148,10 @@ public:
         // does NOT affect current pixel data as there is no safe way
         // to reconstruct the original color values after being
         // modified with both luminance and gamma without storing them
-        Shader.setLuminance(luminance);
+        if (Shader.setLuminance(luminance))
+        {
+            this->Dirty();
+        }
     }
 
     uint8_t GetLuminance() const

@@ -129,16 +129,21 @@ String helloWorldStrings[] = {
 
 void setup(void)
 {
-#ifdef GFX_EXTRA_PRE_INIT
-  GFX_EXTRA_PRE_INIT();
+#ifdef DEV_DEVICE_INIT
+  DEV_DEVICE_INIT();
 #endif
+
+  Serial.begin(115200);
+  // Serial.setDebugOutput(true);
+  // while(!Serial);
+  Serial.println("Arduino_GFX U8g2 Font UTF8 Full Unifont example");
 
   // Init Display
   if (!gfx->begin())
   {
     Serial.println("gfx->begin() failed!");
   }
-  gfx->fillScreen(BLACK);
+  gfx->fillScreen(RGB565_BLACK);
   gfx->setUTF8Print(true); // enable UTF8 support for the Arduino print() function
 
 #ifdef GFX_BL

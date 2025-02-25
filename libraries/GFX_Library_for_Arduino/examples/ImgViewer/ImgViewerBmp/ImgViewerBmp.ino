@@ -3,6 +3,8 @@
  * This is a simple BMP image viewer example
  * Image Source: https://github.blog/2014-11-24-from-sticker-to-sculpture-the-making-of-the-octocat-figurine/
  *
+ * BMP Class original source: https://github.com/Jaycar-Electronics/Arduino-Picture-Frame.git
+ *
  * Setup steps:
  * 1. Change your LCD parameters in Arduino_GFX setting
  * 2. Upload BMP file
@@ -71,7 +73,7 @@ Arduino_GFX *gfx = new Arduino_ILI9341(bus, DF_GFX_RST, 3 /* rotation */, false 
 #if defined(ARDUINO_ARCH_SAMD) && defined(SEEED_GROVE_UI_WIRELESS)
 #include <Seeed_FS.h>
 #include <SD/Seeed_SD.h>
-#elif defined(TARGET_RP2040)
+#elif defined(TARGET_RP2040) || defined(PICO_RP2350)
 #include <LittleFS.h>
 #include <SD.h>
 #elif defined(ESP32)
@@ -79,6 +81,7 @@ Arduino_GFX *gfx = new Arduino_ILI9341(bus, DF_GFX_RST, 3 /* rotation */, false 
 #include <LittleFS.h>
 #include <SPIFFS.h>
 #include <SD.h>
+#include <SD_MMC.h>
 #elif defined(ESP8266)
 #include <LittleFS.h>
 #include <SD.h>
@@ -98,21 +101,21 @@ static void bmpDrawCallback(int16_t x, int16_t y, uint16_t *bitmap, int16_t w, i
 
 void setup()
 {
+#ifdef DEV_DEVICE_INIT
+  DEV_DEVICE_INIT();
+#endif
+
   Serial.begin(115200);
   // Serial.setDebugOutput(true);
   // while(!Serial);
-  Serial.println("BMP Image Viewer");
-
-#ifdef GFX_EXTRA_PRE_INIT
-  GFX_EXTRA_PRE_INIT();
-#endif
+  Serial.println("Arduino_GFX BMP Image Viewer example");
 
   // Init Display
   if (!gfx->begin())
   {
     Serial.println("gfx->begin() failed!");
   }
-  gfx->fillScreen(BLACK);
+  gfx->fillScreen(RGB565_BLACK);
 
 #ifdef GFX_BL
   pinMode(GFX_BL, OUTPUT);
@@ -122,17 +125,24 @@ void setup()
 /* Wio Terminal */
 #if defined(ARDUINO_ARCH_SAMD) && defined(SEEED_GROVE_UI_WIRELESS)
   if (!SD.begin(SDCARD_SS_PIN, SDCARD_SPI, 4000000UL))
-#elif defined(TARGET_RP2040)
+#elif defined(TARGET_RP2040) || defined(PICO_RP2350)
   if (!LittleFS.begin())
   // if (!SD.begin(SS))
 #elif defined(ESP32)
   // if (!FFat.begin())
   if (!LittleFS.begin())
   // if (!SPIFFS.begin())
-  // if (!SD.begin(SS))
+  // SPI.begin(12 /* CLK */, 13 /* D0/MISO */, 11 /* CMD/MOSI */);
+  // if (!SD.begin(10 /* CS */, SPI))
+  // pinMode(10 /* CS */, OUTPUT);
+  // digitalWrite(SD_CS, HIGH);
+  // SD_MMC.setPins(12 /* CLK */, 11 /* CMD/MOSI */, 13 /* D0/MISO */);
+  // if (!SD_MMC.begin("/root", true /* mode1bit */, false /* format_if_mount_failed */, SDMMC_FREQ_DEFAULT))
+  // SD_MMC.setPins(12 /* CLK */, 11 /* CMD/MOSI */, 13 /* D0/MISO */, 14 /* D1 */, 15 /* D2 */, 10 /* D3/CS */);
+  // if (!SD_MMC.begin("/root", false /* mode1bit */, false /* format_if_mount_failed */, SDMMC_FREQ_HIGHSPEED))
 #elif defined(ESP8266)
   if (!LittleFS.begin())
-  // if (!SD.begin())
+  // if (!SD.begin(SS))
 #else
   if (!SD.begin())
 #endif
@@ -144,9 +154,10 @@ void setup()
   {
     unsigned long start = millis();
 
+/* Wio Terminal */
 #if defined(ARDUINO_ARCH_SAMD) && defined(SEEED_GROVE_UI_WIRELESS)
     File bmpFile = SD.open(BMP_FILENAME, "r");
-#elif defined(TARGET_RP2040)
+#elif defined(TARGET_RP2040) || defined(PICO_RP2350)
     File bmpFile = LittleFS.open(BMP_FILENAME, "r");
     // File bmpFile = SD.open(BMP_FILENAME, "r");
 #elif defined(ESP32)

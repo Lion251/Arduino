@@ -15,16 +15,21 @@ uint16_t w, tw;
 
 void setup(void)
 {
+  Serial.begin(115200);
+  // Serial.setDebugOutput(true);
+  // while(!Serial);
+  Serial.println("Arduino_GFX FastLED example");
+
   // Init Display
   if (!gfx->begin())
   {
     Serial.println("gfx->begin() failed!");
   }
-  gfx->fillScreen(BLACK);
+  gfx->fillScreen(RGB565_BLACK);
 
   x = 0;
   gfx->setCursor(x, 0);
-  gfx->setTextColor(RED);
+  gfx->setTextColor(RGB565_RED);
   gfx->println("Hello World!");
 
   int16_t x1, y1;
@@ -44,7 +49,7 @@ void loop()
     x = w - 1;
   }
   gfx->setCursor(x, 0);
-  gfx->setTextColor(random(0xffff), BLACK);
+  gfx->setTextColor(random(0xffff), RGB565_BLACK);
   gfx->println("Hello World!");
 
   delay(100); // 0.1 second

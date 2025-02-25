@@ -10,7 +10,7 @@
 #include <Arduino.h>
 #include <Preferences.h>
 #include <WiFi.h>
-#include <esp_wifi.h>
+//#include <esp_wifi.h>
 #define rescanIncrement 2
 #define timeoutTime 10000
 #define PASS_LEN_KEY 12
@@ -51,6 +51,9 @@ private:
 	void setPassword(String ssid,String pass);
 	String getPassword(String ssid,String defaultPass="none");
 	String getPasswordKey(String ssid);
+	void internalStart();
+	boolean useThread=false;
+
 public:
 	/**
 	 * Static reference used by the wifi event to pass the event from the static context to the object context.
@@ -72,6 +75,14 @@ public:
 	 * call the loop function to update the state
 	 */
 	void loop();
+	/**
+	 * call the loop function to update the state
+	 */
+	void loopThread();
+	/**
+	 * Use a thread to manage the wifi
+	 */
+	void startThread();
 	/**
 	 * Perfoem a normal setup
 	 * This will attempt to connect to a stored network.

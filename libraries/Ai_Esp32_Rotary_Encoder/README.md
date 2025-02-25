@@ -125,15 +125,20 @@ one of the 2 pins: connect to microcontroller Gnd
 the other pin: connect to any microcontroller input pin -> in this example pin 25
 
 **You have to set INPUT_PULLUP of Right and Left pins with `pinMode(ROTARY_ENCODER_A_PIN, INPUT_PULLUP);` and `pinMode(ROTARY_ENCODER_B_PIN, INPUT_PULLUP);`**
-Look example Esp32RotaryEncoderTheShortestExampleNoResistors.
+Look for example Esp32RotaryEncoderTheShortestExampleNoResistors.
 
 
+update 2024-03-10:
 
-There is a new option areEncoderPinsPulldownforEsp32. By default it is true, but in case you use ESP32 you can set it to true. 
-It doesn't make any change for ESP8266, only ESP32.
+There is an optional parameter in the constructor areEncoderPinsPulldownforEsp32. By default it is true, but in case you use ESP32 you can set it to false. 
+Please note that it doesn't make any change for ESP8266, but only for ESP32.
+
+Here in example pay attention to the end of the line - parameter ",false".
+
+To modify other examples just add ", false" as an additional parameter.
 
 ```
-rotaryEncoder.areEncoderPinsPulldownforEsp32 = false;
+AiEsp32RotaryEncoder rotaryEncoder = AiEsp32RotaryEncoder(ROTARY_ENCODER_A_PIN, ROTARY_ENCODER_B_PIN, ROTARY_ENCODER_BUTTON_PIN, ROTARY_ENCODER_VCC_PIN, ROTARY_ENCODER_STEPS,false);
 ```
 
 There is a new option isButtonPulldown. By default it is false, but in case you use ESP32 you can set it to true. See Multi-select example.

@@ -10,11 +10,8 @@ Arduino_SWPAR16::Arduino_SWPAR16(
 {
 }
 
-bool Arduino_SWPAR16::begin(int32_t speed, int8_t dataMode)
+bool Arduino_SWPAR16::begin(int32_t, int8_t)
 {
-  UNUSED(speed);
-  UNUSED(dataMode);
-
   pinMode(_dc, OUTPUT);
   digitalWrite(_dc, HIGH); // Data mode
   if (_cs != GFX_NOT_DEFINED)
@@ -87,9 +84,6 @@ bool Arduino_SWPAR16::begin(int32_t speed, int8_t dataMode)
   {
     pin = digitalPinToPinName((pin_size_t)_rd);
     reg = nrf_gpio_pin_port_decode(&pin);
-    _rdPortSet = &reg->OUTSET;
-    _rdPortClr = &reg->OUTCLR;
-    _rdPinMask = 1UL << pin;
   }
   pin = digitalPinToPinName((pin_size_t)_d0);
   reg = nrf_gpio_pin_port_decode(&pin);
@@ -171,7 +165,69 @@ bool Arduino_SWPAR16::begin(int32_t speed, int8_t dataMode)
   _d15PortSet = &reg->OUTSET;
   _d15PortClr = &reg->OUTCLR;
   _d15PinMask = 1UL << pin;
-#elif defined(TARGET_RP2040)
+#elif defined(ARDUINO_UNOR4_MINIMA) || defined(ARDUINO_UNOR4_WIFI)
+  _dcPinMask = digitalPinToBitMask(_dc);
+  _dcPortSet = (PORTreg_t) & (((R_PORT0_Type *)IOPORT_PRV_PORT_ADDRESS(digitalPinToPort(_dc)))->POSR);
+  _dcPortClr = (PORTreg_t) & (((R_PORT0_Type *)IOPORT_PRV_PORT_ADDRESS(digitalPinToPort(_dc)))->PORR);
+  if (_cs != GFX_NOT_DEFINED)
+  {
+    _csPinMask = digitalPinToBitMask(_cs);
+    _csPortSet = (PORTreg_t) & (((R_PORT0_Type *)IOPORT_PRV_PORT_ADDRESS(digitalPinToPort(_cs)))->POSR);
+    _csPortClr = (PORTreg_t) & (((R_PORT0_Type *)IOPORT_PRV_PORT_ADDRESS(digitalPinToPort(_cs)))->PORR);
+  }
+  _wrPinMask = digitalPinToBitMask(_wr);
+  _wrPortSet = (PORTreg_t) & (((R_PORT0_Type *)IOPORT_PRV_PORT_ADDRESS(digitalPinToPort(_wr)))->POSR);
+  _wrPortClr = (PORTreg_t) & (((R_PORT0_Type *)IOPORT_PRV_PORT_ADDRESS(digitalPinToPort(_wr)))->PORR);
+
+  _d0PinMask = digitalPinToBitMask(_d0);
+  _d0PortSet = (PORTreg_t) & (((R_PORT0_Type *)IOPORT_PRV_PORT_ADDRESS(digitalPinToPort(_d0)))->POSR);
+  _d0PortClr = (PORTreg_t) & (((R_PORT0_Type *)IOPORT_PRV_PORT_ADDRESS(digitalPinToPort(_d0)))->PORR);
+  _d1PinMask = digitalPinToBitMask(_d1);
+  _d1PortSet = (PORTreg_t) & (((R_PORT0_Type *)IOPORT_PRV_PORT_ADDRESS(digitalPinToPort(_d1)))->POSR);
+  _d1PortClr = (PORTreg_t) & (((R_PORT0_Type *)IOPORT_PRV_PORT_ADDRESS(digitalPinToPort(_d1)))->PORR);
+  _d2PinMask = digitalPinToBitMask(_d2);
+  _d2PortSet = (PORTreg_t) & (((R_PORT0_Type *)IOPORT_PRV_PORT_ADDRESS(digitalPinToPort(_d2)))->POSR);
+  _d2PortClr = (PORTreg_t) & (((R_PORT0_Type *)IOPORT_PRV_PORT_ADDRESS(digitalPinToPort(_d2)))->PORR);
+  _d3PinMask = digitalPinToBitMask(_d3);
+  _d3PortSet = (PORTreg_t) & (((R_PORT0_Type *)IOPORT_PRV_PORT_ADDRESS(digitalPinToPort(_d3)))->POSR);
+  _d3PortClr = (PORTreg_t) & (((R_PORT0_Type *)IOPORT_PRV_PORT_ADDRESS(digitalPinToPort(_d3)))->PORR);
+  _d4PinMask = digitalPinToBitMask(_d4);
+  _d4PortSet = (PORTreg_t) & (((R_PORT0_Type *)IOPORT_PRV_PORT_ADDRESS(digitalPinToPort(_d4)))->POSR);
+  _d4PortClr = (PORTreg_t) & (((R_PORT0_Type *)IOPORT_PRV_PORT_ADDRESS(digitalPinToPort(_d4)))->PORR);
+  _d5PinMask = digitalPinToBitMask(_d5);
+  _d5PortSet = (PORTreg_t) & (((R_PORT0_Type *)IOPORT_PRV_PORT_ADDRESS(digitalPinToPort(_d5)))->POSR);
+  _d5PortClr = (PORTreg_t) & (((R_PORT0_Type *)IOPORT_PRV_PORT_ADDRESS(digitalPinToPort(_d5)))->PORR);
+  _d6PinMask = digitalPinToBitMask(_d6);
+  _d6PortSet = (PORTreg_t) & (((R_PORT0_Type *)IOPORT_PRV_PORT_ADDRESS(digitalPinToPort(_d6)))->POSR);
+  _d6PortClr = (PORTreg_t) & (((R_PORT0_Type *)IOPORT_PRV_PORT_ADDRESS(digitalPinToPort(_d6)))->PORR);
+  _d7PinMask = digitalPinToBitMask(_d7);
+  _d7PortSet = (PORTreg_t) & (((R_PORT0_Type *)IOPORT_PRV_PORT_ADDRESS(digitalPinToPort(_d7)))->POSR);
+  _d7PortClr = (PORTreg_t) & (((R_PORT0_Type *)IOPORT_PRV_PORT_ADDRESS(digitalPinToPort(_d7)))->PORR);
+  _d8PinMask = digitalPinToBitMask(_d8);
+  _d8PortSet = (PORTreg_t) & (((R_PORT0_Type *)IOPORT_PRV_PORT_ADDRESS(digitalPinToPort(_d8)))->POSR);
+  _d8PortClr = (PORTreg_t) & (((R_PORT0_Type *)IOPORT_PRV_PORT_ADDRESS(digitalPinToPort(_d8)))->PORR);
+  _d9PinMask = digitalPinToBitMask(_d9);
+  _d9PortSet = (PORTreg_t) & (((R_PORT0_Type *)IOPORT_PRV_PORT_ADDRESS(digitalPinToPort(_d9)))->POSR);
+  _d9PortClr = (PORTreg_t) & (((R_PORT0_Type *)IOPORT_PRV_PORT_ADDRESS(digitalPinToPort(_d9)))->PORR);
+  _d10PinMask = digitalPinToBitMask(_d10);
+  _d10PortSet = (PORTreg_t) & (((R_PORT0_Type *)IOPORT_PRV_PORT_ADDRESS(digitalPinToPort(_d10)))->POSR);
+  _d10PortClr = (PORTreg_t) & (((R_PORT0_Type *)IOPORT_PRV_PORT_ADDRESS(digitalPinToPort(_d10)))->PORR);
+  _d11PinMask = digitalPinToBitMask(_d11);
+  _d11PortSet = (PORTreg_t) & (((R_PORT0_Type *)IOPORT_PRV_PORT_ADDRESS(digitalPinToPort(_d11)))->POSR);
+  _d11PortClr = (PORTreg_t) & (((R_PORT0_Type *)IOPORT_PRV_PORT_ADDRESS(digitalPinToPort(_d11)))->PORR);
+  _d12PinMask = digitalPinToBitMask(_d12);
+  _d12PortSet = (PORTreg_t) & (((R_PORT0_Type *)IOPORT_PRV_PORT_ADDRESS(digitalPinToPort(_d12)))->POSR);
+  _d12PortClr = (PORTreg_t) & (((R_PORT0_Type *)IOPORT_PRV_PORT_ADDRESS(digitalPinToPort(_d12)))->PORR);
+  _d13PinMask = digitalPinToBitMask(_d13);
+  _d13PortSet = (PORTreg_t) & (((R_PORT0_Type *)IOPORT_PRV_PORT_ADDRESS(digitalPinToPort(_d13)))->POSR);
+  _d13PortClr = (PORTreg_t) & (((R_PORT0_Type *)IOPORT_PRV_PORT_ADDRESS(digitalPinToPort(_d13)))->PORR);
+  _d14PinMask = digitalPinToBitMask(_d14);
+  _d14PortSet = (PORTreg_t) & (((R_PORT0_Type *)IOPORT_PRV_PORT_ADDRESS(digitalPinToPort(_d14)))->POSR);
+  _d14PortClr = (PORTreg_t) & (((R_PORT0_Type *)IOPORT_PRV_PORT_ADDRESS(digitalPinToPort(_d14)))->PORR);
+  _d15PinMask = digitalPinToBitMask(_d15);
+  _d15PortSet = (PORTreg_t) & (((R_PORT0_Type *)IOPORT_PRV_PORT_ADDRESS(digitalPinToPort(_d15)))->POSR);
+  _d15PortClr = (PORTreg_t) & (((R_PORT0_Type *)IOPORT_PRV_PORT_ADDRESS(digitalPinToPort(_d15)))->PORR);
+#elif defined(TARGET_RP2040) || defined(PICO_RP2350)
   _dcPinMask = digitalPinToBitMask(_dc);
   _dcPortSet = (PORTreg_t)&sio_hw->gpio_set;
   _dcPortClr = (PORTreg_t)&sio_hw->gpio_clr;
@@ -184,12 +240,7 @@ bool Arduino_SWPAR16::begin(int32_t speed, int8_t dataMode)
   _wrPinMask = digitalPinToBitMask(_wr);
   _wrPortSet = (PORTreg_t)&sio_hw->gpio_set;
   _wrPortClr = (PORTreg_t)&sio_hw->gpio_clr;
-  if (_rd != GFX_NOT_DEFINED)
-  {
-    _rdPinMask = digitalPinToBitMask(_rd);
-    _rdPortSet = (PORTreg_t)&sio_hw->gpio_set;
-    _rdPortClr = (PORTreg_t)&sio_hw->gpio_clr;
-  }
+
   _d0PinMask = digitalPinToBitMask(_d0);
   _d0PortSet = (PORTreg_t)&sio_hw->gpio_set;
   _d0PortClr = (PORTreg_t)&sio_hw->gpio_clr;
@@ -240,293 +291,277 @@ bool Arduino_SWPAR16::begin(int32_t speed, int8_t dataMode)
   _d15PortClr = (PORTreg_t)&sio_hw->gpio_clr;
 #elif defined(ESP32) && (CONFIG_IDF_TARGET_ESP32C3)
   _dcPinMask = digitalPinToBitMask(_dc);
-  _dcPortSet = (PORTreg_t)&GPIO.out_w1ts;
-  _dcPortClr = (PORTreg_t)&GPIO.out_w1tc;
+  _dcPortSet = (PORTreg_t)GPIO_OUT_W1TS_REG;
+  _dcPortClr = (PORTreg_t)GPIO_OUT_W1TC_REG;
   if (_cs != GFX_NOT_DEFINED)
   {
     _csPinMask = digitalPinToBitMask(_cs);
-    _csPortSet = (PORTreg_t)&GPIO.out_w1ts;
-    _csPortClr = (PORTreg_t)&GPIO.out_w1tc;
+    _csPortSet = (PORTreg_t)GPIO_OUT_W1TS_REG;
+    _csPortClr = (PORTreg_t)GPIO_OUT_W1TC_REG;
   }
   _wrPinMask = digitalPinToBitMask(_wr);
-  _wrPortSet = (PORTreg_t)&GPIO.out_w1ts;
-  _wrPortClr = (PORTreg_t)&GPIO.out_w1tc;
-  if (_rd != GFX_NOT_DEFINED)
-  {
-    _rdPinMask = digitalPinToBitMask(_rd);
-    _rdPortSet = (PORTreg_t)&GPIO.out_w1ts;
-    _rdPortClr = (PORTreg_t)&GPIO.out_w1tc;
-  }
+  _wrPortSet = (PORTreg_t)GPIO_OUT_W1TS_REG;
+  _wrPortClr = (PORTreg_t)GPIO_OUT_W1TC_REG;
+
   _d0PinMask = digitalPinToBitMask(_d0);
-  _d0PortSet = (PORTreg_t)&GPIO.out_w1ts;
-  _d0PortClr = (PORTreg_t)&GPIO.out_w1tc;
+  _d0PortSet = (PORTreg_t)GPIO_OUT_W1TS_REG;
+  _d0PortClr = (PORTreg_t)GPIO_OUT_W1TC_REG;
   _d1PinMask = digitalPinToBitMask(_d1);
-  _d1PortSet = (PORTreg_t)&GPIO.out_w1ts;
-  _d1PortClr = (PORTreg_t)&GPIO.out_w1tc;
+  _d1PortSet = (PORTreg_t)GPIO_OUT_W1TS_REG;
+  _d1PortClr = (PORTreg_t)GPIO_OUT_W1TC_REG;
   _d2PinMask = digitalPinToBitMask(_d2);
-  _d2PortSet = (PORTreg_t)&GPIO.out_w1ts;
-  _d2PortClr = (PORTreg_t)&GPIO.out_w1tc;
+  _d2PortSet = (PORTreg_t)GPIO_OUT_W1TS_REG;
+  _d2PortClr = (PORTreg_t)GPIO_OUT_W1TC_REG;
   _d3PinMask = digitalPinToBitMask(_d3);
-  _d3PortSet = (PORTreg_t)&GPIO.out_w1ts;
-  _d3PortClr = (PORTreg_t)&GPIO.out_w1tc;
+  _d3PortSet = (PORTreg_t)GPIO_OUT_W1TS_REG;
+  _d3PortClr = (PORTreg_t)GPIO_OUT_W1TC_REG;
   _d4PinMask = digitalPinToBitMask(_d4);
-  _d4PortSet = (PORTreg_t)&GPIO.out_w1ts;
-  _d4PortClr = (PORTreg_t)&GPIO.out_w1tc;
+  _d4PortSet = (PORTreg_t)GPIO_OUT_W1TS_REG;
+  _d4PortClr = (PORTreg_t)GPIO_OUT_W1TC_REG;
   _d5PinMask = digitalPinToBitMask(_d5);
-  _d5PortSet = (PORTreg_t)&GPIO.out_w1ts;
-  _d5PortClr = (PORTreg_t)&GPIO.out_w1tc;
+  _d5PortSet = (PORTreg_t)GPIO_OUT_W1TS_REG;
+  _d5PortClr = (PORTreg_t)GPIO_OUT_W1TC_REG;
   _d6PinMask = digitalPinToBitMask(_d6);
-  _d6PortSet = (PORTreg_t)&GPIO.out_w1ts;
-  _d6PortClr = (PORTreg_t)&GPIO.out_w1tc;
+  _d6PortSet = (PORTreg_t)GPIO_OUT_W1TS_REG;
+  _d6PortClr = (PORTreg_t)GPIO_OUT_W1TC_REG;
   _d7PinMask = digitalPinToBitMask(_d7);
-  _d7PortSet = (PORTreg_t)&GPIO.out_w1ts;
-  _d7PortClr = (PORTreg_t)&GPIO.out_w1tc;
+  _d7PortSet = (PORTreg_t)GPIO_OUT_W1TS_REG;
+  _d7PortClr = (PORTreg_t)GPIO_OUT_W1TC_REG;
   _d8PinMask = digitalPinToBitMask(_d8);
-  _d8PortSet = (PORTreg_t)&GPIO.out_w1ts;
-  _d8PortClr = (PORTreg_t)&GPIO.out_w1tc;
+  _d8PortSet = (PORTreg_t)GPIO_OUT_W1TS_REG;
+  _d8PortClr = (PORTreg_t)GPIO_OUT_W1TC_REG;
   _d9PinMask = digitalPinToBitMask(_d9);
-  _d9PortSet = (PORTreg_t)&GPIO.out_w1ts;
-  _d9PortClr = (PORTreg_t)&GPIO.out_w1tc;
+  _d9PortSet = (PORTreg_t)GPIO_OUT_W1TS_REG;
+  _d9PortClr = (PORTreg_t)GPIO_OUT_W1TC_REG;
   _d10PinMask = digitalPinToBitMask(_d10);
-  _d10PortSet = (PORTreg_t)&GPIO.out_w1ts;
-  _d10PortClr = (PORTreg_t)&GPIO.out_w1tc;
+  _d10PortSet = (PORTreg_t)GPIO_OUT_W1TS_REG;
+  _d10PortClr = (PORTreg_t)GPIO_OUT_W1TC_REG;
   _d11PinMask = digitalPinToBitMask(_d11);
-  _d11PortSet = (PORTreg_t)&GPIO.out_w1ts;
-  _d11PortClr = (PORTreg_t)&GPIO.out_w1tc;
+  _d11PortSet = (PORTreg_t)GPIO_OUT_W1TS_REG;
+  _d11PortClr = (PORTreg_t)GPIO_OUT_W1TC_REG;
   _d12PinMask = digitalPinToBitMask(_d12);
-  _d12PortSet = (PORTreg_t)&GPIO.out_w1ts;
-  _d12PortClr = (PORTreg_t)&GPIO.out_w1tc;
+  _d12PortSet = (PORTreg_t)GPIO_OUT_W1TS_REG;
+  _d12PortClr = (PORTreg_t)GPIO_OUT_W1TC_REG;
   _d13PinMask = digitalPinToBitMask(_d13);
-  _d13PortSet = (PORTreg_t)&GPIO.out_w1ts;
-  _d13PortClr = (PORTreg_t)&GPIO.out_w1tc;
+  _d13PortSet = (PORTreg_t)GPIO_OUT_W1TS_REG;
+  _d13PortClr = (PORTreg_t)GPIO_OUT_W1TC_REG;
   _d14PinMask = digitalPinToBitMask(_d14);
-  _d14PortSet = (PORTreg_t)&GPIO.out_w1ts;
-  _d14PortClr = (PORTreg_t)&GPIO.out_w1tc;
+  _d14PortSet = (PORTreg_t)GPIO_OUT_W1TS_REG;
+  _d14PortClr = (PORTreg_t)GPIO_OUT_W1TC_REG;
   _d15PinMask = digitalPinToBitMask(_d15);
-  _d15PortSet = (PORTreg_t)&GPIO.out_w1ts;
-  _d15PortClr = (PORTreg_t)&GPIO.out_w1tc;
+  _d15PortSet = (PORTreg_t)GPIO_OUT_W1TS_REG;
+  _d15PortClr = (PORTreg_t)GPIO_OUT_W1TC_REG;
 #elif defined(ESP32)
   _dcPinMask = digitalPinToBitMask(_dc);
   if (_dc >= 32)
   {
-    _dcPortSet = (PORTreg_t)&GPIO.out1_w1ts.val;
-    _dcPortClr = (PORTreg_t)&GPIO.out1_w1tc.val;
+    _dcPortSet = (PORTreg_t)GPIO_OUT1_W1TS_REG;
+    _dcPortClr = (PORTreg_t)GPIO_OUT1_W1TC_REG;
   }
   else
   {
-    _dcPortSet = (PORTreg_t)&GPIO.out_w1ts;
-    _dcPortClr = (PORTreg_t)&GPIO.out_w1tc;
+    _dcPortSet = (PORTreg_t)GPIO_OUT_W1TS_REG;
+    _dcPortClr = (PORTreg_t)GPIO_OUT_W1TC_REG;
   }
   if (_cs >= 32)
   {
     _csPinMask = digitalPinToBitMask(_cs);
-    _csPortSet = (PORTreg_t)&GPIO.out1_w1ts.val;
-    _csPortClr = (PORTreg_t)&GPIO.out1_w1tc.val;
+    _csPortSet = (PORTreg_t)GPIO_OUT1_W1TS_REG;
+    _csPortClr = (PORTreg_t)GPIO_OUT1_W1TC_REG;
   }
   else if (_cs != GFX_NOT_DEFINED)
   {
     _csPinMask = digitalPinToBitMask(_cs);
-    _csPortSet = (PORTreg_t)&GPIO.out_w1ts;
-    _csPortClr = (PORTreg_t)&GPIO.out_w1tc;
+    _csPortSet = (PORTreg_t)GPIO_OUT_W1TS_REG;
+    _csPortClr = (PORTreg_t)GPIO_OUT_W1TC_REG;
   }
   _wrPinMask = digitalPinToBitMask(_wr);
   if (_wr >= 32)
   {
-    _wrPortSet = (PORTreg_t)&GPIO.out1_w1ts.val;
-    _wrPortClr = (PORTreg_t)&GPIO.out1_w1tc.val;
+    _wrPortSet = (PORTreg_t)GPIO_OUT1_W1TS_REG;
+    _wrPortClr = (PORTreg_t)GPIO_OUT1_W1TC_REG;
   }
   else
   {
-    _wrPortSet = (PORTreg_t)&GPIO.out_w1ts;
-    _wrPortClr = (PORTreg_t)&GPIO.out_w1tc;
+    _wrPortSet = (PORTreg_t)GPIO_OUT_W1TS_REG;
+    _wrPortClr = (PORTreg_t)GPIO_OUT_W1TC_REG;
   }
-  if (_rd >= 32)
-  {
-    _rdPinMask = digitalPinToBitMask(_rd);
-    _rdPortSet = (PORTreg_t)&GPIO.out1_w1ts.val;
-    _rdPortClr = (PORTreg_t)&GPIO.out1_w1tc.val;
-  }
-  else if (_rd != GFX_NOT_DEFINED)
-  {
-    _rdPinMask = digitalPinToBitMask(_rd);
-    _rdPortSet = (PORTreg_t)&GPIO.out_w1ts;
-    _rdPortClr = (PORTreg_t)&GPIO.out_w1tc;
-  }
+
   _d0PinMask = digitalPinToBitMask(_d0);
   if (_d0 >= 32)
   {
-    _d0PortSet = (PORTreg_t)&GPIO.out1_w1ts.val;
-    _d0PortClr = (PORTreg_t)&GPIO.out1_w1tc.val;
+    _d0PortSet = (PORTreg_t)GPIO_OUT1_W1TS_REG;
+    _d0PortClr = (PORTreg_t)GPIO_OUT1_W1TC_REG;
   }
   else
   {
-    _d0PortSet = (PORTreg_t)&GPIO.out_w1ts;
-    _d0PortClr = (PORTreg_t)&GPIO.out_w1tc;
+    _d0PortSet = (PORTreg_t)GPIO_OUT_W1TS_REG;
+    _d0PortClr = (PORTreg_t)GPIO_OUT_W1TC_REG;
   }
   _d1PinMask = digitalPinToBitMask(_d1);
   if (_d1 >= 32)
   {
-    _d1PortSet = (PORTreg_t)&GPIO.out1_w1ts.val;
-    _d1PortClr = (PORTreg_t)&GPIO.out1_w1tc.val;
+    _d1PortSet = (PORTreg_t)GPIO_OUT1_W1TS_REG;
+    _d1PortClr = (PORTreg_t)GPIO_OUT1_W1TC_REG;
   }
   else
   {
-    _d1PortSet = (PORTreg_t)&GPIO.out_w1ts;
-    _d1PortClr = (PORTreg_t)&GPIO.out_w1tc;
+    _d1PortSet = (PORTreg_t)GPIO_OUT_W1TS_REG;
+    _d1PortClr = (PORTreg_t)GPIO_OUT_W1TC_REG;
   }
   _d2PinMask = digitalPinToBitMask(_d2);
   if (_d2 >= 32)
   {
-    _d2PortSet = (PORTreg_t)&GPIO.out1_w1ts.val;
-    _d2PortClr = (PORTreg_t)&GPIO.out1_w1tc.val;
+    _d2PortSet = (PORTreg_t)GPIO_OUT1_W1TS_REG;
+    _d2PortClr = (PORTreg_t)GPIO_OUT1_W1TC_REG;
   }
   else
   {
-    _d2PortSet = (PORTreg_t)&GPIO.out_w1ts;
-    _d2PortClr = (PORTreg_t)&GPIO.out_w1tc;
+    _d2PortSet = (PORTreg_t)GPIO_OUT_W1TS_REG;
+    _d2PortClr = (PORTreg_t)GPIO_OUT_W1TC_REG;
   }
   _d3PinMask = digitalPinToBitMask(_d3);
   if (_d3 >= 32)
   {
-    _d3PortSet = (PORTreg_t)&GPIO.out1_w1ts.val;
-    _d3PortClr = (PORTreg_t)&GPIO.out1_w1tc.val;
+    _d3PortSet = (PORTreg_t)GPIO_OUT1_W1TS_REG;
+    _d3PortClr = (PORTreg_t)GPIO_OUT1_W1TC_REG;
   }
   else
   {
-    _d3PortSet = (PORTreg_t)&GPIO.out_w1ts;
-    _d3PortClr = (PORTreg_t)&GPIO.out_w1tc;
+    _d3PortSet = (PORTreg_t)GPIO_OUT_W1TS_REG;
+    _d3PortClr = (PORTreg_t)GPIO_OUT_W1TC_REG;
   }
   _d4PinMask = digitalPinToBitMask(_d4);
   if (_d4 >= 32)
   {
-    _d4PortSet = (PORTreg_t)&GPIO.out1_w1ts.val;
-    _d4PortClr = (PORTreg_t)&GPIO.out1_w1tc.val;
+    _d4PortSet = (PORTreg_t)GPIO_OUT1_W1TS_REG;
+    _d4PortClr = (PORTreg_t)GPIO_OUT1_W1TC_REG;
   }
   else
   {
-    _d4PortSet = (PORTreg_t)&GPIO.out_w1ts;
-    _d4PortClr = (PORTreg_t)&GPIO.out_w1tc;
+    _d4PortSet = (PORTreg_t)GPIO_OUT_W1TS_REG;
+    _d4PortClr = (PORTreg_t)GPIO_OUT_W1TC_REG;
   }
   _d5PinMask = digitalPinToBitMask(_d5);
   if (_d5 >= 32)
   {
-    _d5PortSet = (PORTreg_t)&GPIO.out1_w1ts.val;
-    _d5PortClr = (PORTreg_t)&GPIO.out1_w1tc.val;
+    _d5PortSet = (PORTreg_t)GPIO_OUT1_W1TS_REG;
+    _d5PortClr = (PORTreg_t)GPIO_OUT1_W1TC_REG;
   }
   else
   {
-    _d5PortSet = (PORTreg_t)&GPIO.out_w1ts;
-    _d5PortClr = (PORTreg_t)&GPIO.out_w1tc;
+    _d5PortSet = (PORTreg_t)GPIO_OUT_W1TS_REG;
+    _d5PortClr = (PORTreg_t)GPIO_OUT_W1TC_REG;
   }
   _d6PinMask = digitalPinToBitMask(_d6);
   if (_d6 >= 32)
   {
-    _d6PortSet = (PORTreg_t)&GPIO.out1_w1ts.val;
-    _d6PortClr = (PORTreg_t)&GPIO.out1_w1tc.val;
+    _d6PortSet = (PORTreg_t)GPIO_OUT1_W1TS_REG;
+    _d6PortClr = (PORTreg_t)GPIO_OUT1_W1TC_REG;
   }
   else
   {
-    _d6PortSet = (PORTreg_t)&GPIO.out_w1ts;
-    _d6PortClr = (PORTreg_t)&GPIO.out_w1tc;
+    _d6PortSet = (PORTreg_t)GPIO_OUT_W1TS_REG;
+    _d6PortClr = (PORTreg_t)GPIO_OUT_W1TC_REG;
   }
   _d7PinMask = digitalPinToBitMask(_d7);
   if (_d7 >= 32)
   {
-    _d7PortSet = (PORTreg_t)&GPIO.out1_w1ts.val;
-    _d7PortClr = (PORTreg_t)&GPIO.out1_w1tc.val;
+    _d7PortSet = (PORTreg_t)GPIO_OUT1_W1TS_REG;
+    _d7PortClr = (PORTreg_t)GPIO_OUT1_W1TC_REG;
   }
   else
   {
-    _d7PortSet = (PORTreg_t)&GPIO.out_w1ts;
-    _d7PortClr = (PORTreg_t)&GPIO.out_w1tc;
+    _d7PortSet = (PORTreg_t)GPIO_OUT_W1TS_REG;
+    _d7PortClr = (PORTreg_t)GPIO_OUT_W1TC_REG;
   }
   _d8PinMask = digitalPinToBitMask(_d8);
   if (_d8 >= 32)
   {
-    _d8PortSet = (PORTreg_t)&GPIO.out1_w1ts.val;
-    _d8PortClr = (PORTreg_t)&GPIO.out1_w1tc.val;
+    _d8PortSet = (PORTreg_t)GPIO_OUT1_W1TS_REG;
+    _d8PortClr = (PORTreg_t)GPIO_OUT1_W1TC_REG;
   }
   else
   {
-    _d8PortSet = (PORTreg_t)&GPIO.out_w1ts;
-    _d8PortClr = (PORTreg_t)&GPIO.out_w1tc;
+    _d8PortSet = (PORTreg_t)GPIO_OUT_W1TS_REG;
+    _d8PortClr = (PORTreg_t)GPIO_OUT_W1TC_REG;
   }
   _d9PinMask = digitalPinToBitMask(_d9);
   if (_d9 >= 32)
   {
-    _d9PortSet = (PORTreg_t)&GPIO.out1_w1ts.val;
-    _d9PortClr = (PORTreg_t)&GPIO.out1_w1tc.val;
+    _d9PortSet = (PORTreg_t)GPIO_OUT1_W1TS_REG;
+    _d9PortClr = (PORTreg_t)GPIO_OUT1_W1TC_REG;
   }
   else
   {
-    _d9PortSet = (PORTreg_t)&GPIO.out_w1ts;
-    _d9PortClr = (PORTreg_t)&GPIO.out_w1tc;
+    _d9PortSet = (PORTreg_t)GPIO_OUT_W1TS_REG;
+    _d9PortClr = (PORTreg_t)GPIO_OUT_W1TC_REG;
   }
   _d10PinMask = digitalPinToBitMask(_d10);
   if (_d10 >= 32)
   {
-    _d10PortSet = (PORTreg_t)&GPIO.out1_w1ts.val;
-    _d10PortClr = (PORTreg_t)&GPIO.out1_w1tc.val;
+    _d10PortSet = (PORTreg_t)GPIO_OUT1_W1TS_REG;
+    _d10PortClr = (PORTreg_t)GPIO_OUT1_W1TC_REG;
   }
   else
   {
-    _d10PortSet = (PORTreg_t)&GPIO.out_w1ts;
-    _d10PortClr = (PORTreg_t)&GPIO.out_w1tc;
+    _d10PortSet = (PORTreg_t)GPIO_OUT_W1TS_REG;
+    _d10PortClr = (PORTreg_t)GPIO_OUT_W1TC_REG;
   }
   _d11PinMask = digitalPinToBitMask(_d11);
   if (_d11 >= 32)
   {
-    _d11PortSet = (PORTreg_t)&GPIO.out1_w1ts.val;
-    _d11PortClr = (PORTreg_t)&GPIO.out1_w1tc.val;
+    _d11PortSet = (PORTreg_t)GPIO_OUT1_W1TS_REG;
+    _d11PortClr = (PORTreg_t)GPIO_OUT1_W1TC_REG;
   }
   else
   {
-    _d11PortSet = (PORTreg_t)&GPIO.out_w1ts;
-    _d11PortClr = (PORTreg_t)&GPIO.out_w1tc;
+    _d11PortSet = (PORTreg_t)GPIO_OUT_W1TS_REG;
+    _d11PortClr = (PORTreg_t)GPIO_OUT_W1TC_REG;
   }
   _d12PinMask = digitalPinToBitMask(_d12);
   if (_d12 >= 32)
   {
-    _d12PortSet = (PORTreg_t)&GPIO.out1_w1ts.val;
-    _d12PortClr = (PORTreg_t)&GPIO.out1_w1tc.val;
+    _d12PortSet = (PORTreg_t)GPIO_OUT1_W1TS_REG;
+    _d12PortClr = (PORTreg_t)GPIO_OUT1_W1TC_REG;
   }
   else
   {
-    _d12PortSet = (PORTreg_t)&GPIO.out_w1ts;
-    _d12PortClr = (PORTreg_t)&GPIO.out_w1tc;
+    _d12PortSet = (PORTreg_t)GPIO_OUT_W1TS_REG;
+    _d12PortClr = (PORTreg_t)GPIO_OUT_W1TC_REG;
   }
   _d13PinMask = digitalPinToBitMask(_d13);
   if (_d13 >= 32)
   {
-    _d13PortSet = (PORTreg_t)&GPIO.out1_w1ts.val;
-    _d13PortClr = (PORTreg_t)&GPIO.out1_w1tc.val;
+    _d13PortSet = (PORTreg_t)GPIO_OUT1_W1TS_REG;
+    _d13PortClr = (PORTreg_t)GPIO_OUT1_W1TC_REG;
   }
   else
   {
-    _d13PortSet = (PORTreg_t)&GPIO.out_w1ts;
-    _d13PortClr = (PORTreg_t)&GPIO.out_w1tc;
+    _d13PortSet = (PORTreg_t)GPIO_OUT_W1TS_REG;
+    _d13PortClr = (PORTreg_t)GPIO_OUT_W1TC_REG;
   }
   _d14PinMask = digitalPinToBitMask(_d14);
   if (_d14 >= 32)
   {
-    _d14PortSet = (PORTreg_t)&GPIO.out1_w1ts.val;
-    _d14PortClr = (PORTreg_t)&GPIO.out1_w1tc.val;
+    _d14PortSet = (PORTreg_t)GPIO_OUT1_W1TS_REG;
+    _d14PortClr = (PORTreg_t)GPIO_OUT1_W1TC_REG;
   }
   else
   {
-    _d14PortSet = (PORTreg_t)&GPIO.out_w1ts;
-    _d14PortClr = (PORTreg_t)&GPIO.out_w1tc;
+    _d14PortSet = (PORTreg_t)GPIO_OUT_W1TS_REG;
+    _d14PortClr = (PORTreg_t)GPIO_OUT_W1TC_REG;
   }
   _d15PinMask = digitalPinToBitMask(_d15);
   if (_d15 >= 32)
   {
-    _d15PortSet = (PORTreg_t)&GPIO.out1_w1ts.val;
-    _d15PortClr = (PORTreg_t)&GPIO.out1_w1tc.val;
+    _d15PortSet = (PORTreg_t)GPIO_OUT1_W1TS_REG;
+    _d15PortClr = (PORTreg_t)GPIO_OUT1_W1TC_REG;
   }
   else
   {
-    _d15PortSet = (PORTreg_t)&GPIO.out_w1ts;
-    _d15PortClr = (PORTreg_t)&GPIO.out_w1tc;
+    _d15PortSet = (PORTreg_t)GPIO_OUT_W1TS_REG;
+    _d15PortClr = (PORTreg_t)GPIO_OUT_W1TC_REG;
   }
 #elif defined(CORE_TEENSY)
 #if !defined(KINETISK)
@@ -547,14 +582,7 @@ bool Arduino_SWPAR16::begin(int32_t speed, int8_t dataMode)
 #endif
   _wrPortSet = portSetRegister(_wr);
   _wrPortClr = portClearRegister(_wr);
-  if (_rd != GFX_NOT_DEFINED)
-  {
-#if !defined(KINETISK)
-    _rdPinMask = digitalPinToBitMask(_rd);
-#endif
-    _rdPortSet = portSetRegister(_rd);
-    _rdPortClr = portClearRegister(_rd);
-  }
+
 #if !defined(KINETISK)
   _d0PinMask = digitalPinToBitMask(_d0);
 #endif
@@ -648,12 +676,7 @@ bool Arduino_SWPAR16::begin(int32_t speed, int8_t dataMode)
   _wrPinMask = digitalPinToBitMask(_wr);
   _wrPortSet = &(PORT->Group[g_APinDescription[_wr].ulPort].OUTSET.reg);
   _wrPortClr = &(PORT->Group[g_APinDescription[_wr].ulPort].OUTCLR.reg);
-  if (_rd != GFX_NOT_DEFINED)
-  {
-    _rdPinMask = digitalPinToBitMask(_rd);
-    _rdPortSet = &(PORT->Group[g_APinDescription[_rd].ulPort].OUTSET.reg);
-    _rdPortClr = &(PORT->Group[g_APinDescription[_rd].ulPort].OUTCLR.reg);
-  }
+
   _d0PinMask = digitalPinToBitMask(_d0);
   _d0PortSet = &(PORT->Group[g_APinDescription[_d0].ulPort].OUTSET.reg);
   _d0PortClr = &(PORT->Group[g_APinDescription[_d0].ulPort].OUTCLR.reg);
@@ -716,12 +739,7 @@ bool Arduino_SWPAR16::begin(int32_t speed, int8_t dataMode)
   _wrPort = (PORTreg_t)portOutputRegister(digitalPinToPort(_wr));
   _wrPinMaskSet = digitalPinToBitMask(_wr);
   _wrPinMaskClr = ~_wrPinMaskSet;
-  if (_rd != GFX_NOT_DEFINED)
-  {
-    _rdPort = (PORTreg_t)portOutputRegister(digitalPinToPort(_rd));
-    _rdPinMaskSet = digitalPinToBitMask(_rd);
-    _rdPinMaskClr = ~_rdPinMaskSet;
-  }
+
   _d0Port = (PORTreg_t)portOutputRegister(digitalPinToPort(_d0));
   _d0PinMaskSet = digitalPinToBitMask(_d0);
   _d0PinMaskClr = ~_d0PinMaskSet;
@@ -805,6 +823,18 @@ void Arduino_SWPAR16::writeCommand16(uint16_t c)
   DC_HIGH();
 }
 
+void Arduino_SWPAR16::writeCommandBytes(uint8_t *data, uint32_t len)
+{
+  DC_LOW();
+
+  while (len--)
+  {
+    WRITE(*data++);
+  }
+
+  DC_HIGH();
+}
+
 void Arduino_SWPAR16::write(uint8_t d)
 {
   WRITE(d);
@@ -828,6 +858,21 @@ void Arduino_SWPAR16::writeRepeat(uint16_t p, uint32_t len)
 #else
   WRITEREPEAT(p, len);
 #endif
+}
+
+void Arduino_SWPAR16::writeBytes(uint8_t *data, uint32_t len)
+{
+  while (len > 1)
+  {
+    _data16.msb = *data++;
+    _data16.lsb = *data++;
+    WRITE16(_data16.value);
+    len -= 2;
+  }
+  if (len)
+  {
+    WRITE(*data);
+  }
 }
 
 void Arduino_SWPAR16::writePixels(uint16_t *data, uint32_t len)
@@ -888,29 +933,6 @@ void Arduino_SWPAR16::writeC8D16D16Split(uint8_t c, uint16_t d1, uint16_t d2)
   _data16.value = d2;
   WRITE(_data16.msb);
   WRITE(_data16.lsb);
-}
-
-void Arduino_SWPAR16::writeBytes(uint8_t *data, uint32_t len)
-{
-  while (len > 1)
-  {
-    _data16.msb = *data++;
-    _data16.lsb = *data++;
-    WRITE16(_data16.value);
-    len -= 2;
-  }
-  if (len)
-  {
-    WRITE(*data);
-  }
-}
-
-void Arduino_SWPAR16::writePattern(uint8_t *data, uint8_t len, uint32_t repeat)
-{
-  while (repeat--)
-  {
-    writeBytes(data, len);
-  }
 }
 
 void Arduino_SWPAR16::writeIndexedPixels(uint8_t *data, uint16_t *idx, uint32_t len)
@@ -1148,7 +1170,7 @@ void Arduino_SWPAR16::WRITEREPEAT(uint16_t p, uint32_t len)
 
 /******** low level bit twiddling **********/
 
-INLINE void Arduino_SWPAR16::DC_HIGH(void)
+GFX_INLINE void Arduino_SWPAR16::DC_HIGH(void)
 {
 #if defined(USE_FAST_PINIO)
 #if defined(HAS_PORT_SET_CLR)
@@ -1165,7 +1187,7 @@ INLINE void Arduino_SWPAR16::DC_HIGH(void)
 #endif // end !USE_FAST_PINIO
 }
 
-INLINE void Arduino_SWPAR16::DC_LOW(void)
+GFX_INLINE void Arduino_SWPAR16::DC_LOW(void)
 {
 #if defined(USE_FAST_PINIO)
 #if defined(HAS_PORT_SET_CLR)
@@ -1182,7 +1204,7 @@ INLINE void Arduino_SWPAR16::DC_LOW(void)
 #endif // end !USE_FAST_PINIO
 }
 
-INLINE void Arduino_SWPAR16::CS_HIGH(void)
+GFX_INLINE void Arduino_SWPAR16::CS_HIGH(void)
 {
   if (_cs != GFX_NOT_DEFINED)
   {
@@ -1202,7 +1224,7 @@ INLINE void Arduino_SWPAR16::CS_HIGH(void)
   }
 }
 
-INLINE void Arduino_SWPAR16::CS_LOW(void)
+GFX_INLINE void Arduino_SWPAR16::CS_LOW(void)
 {
   if (_cs != GFX_NOT_DEFINED)
   {
@@ -1222,7 +1244,7 @@ INLINE void Arduino_SWPAR16::CS_LOW(void)
   }
 }
 
-INLINE void Arduino_SWPAR16::WR_HIGH(void)
+GFX_INLINE void Arduino_SWPAR16::WR_HIGH(void)
 {
 #if defined(USE_FAST_PINIO)
 #if defined(HAS_PORT_SET_CLR)
@@ -1239,7 +1261,7 @@ INLINE void Arduino_SWPAR16::WR_HIGH(void)
 #endif // end !USE_FAST_PINIO
 }
 
-INLINE void Arduino_SWPAR16::WR_LOW(void)
+GFX_INLINE void Arduino_SWPAR16::WR_LOW(void)
 {
 #if defined(USE_FAST_PINIO)
 #if defined(HAS_PORT_SET_CLR)
@@ -1256,47 +1278,7 @@ INLINE void Arduino_SWPAR16::WR_LOW(void)
 #endif // end !USE_FAST_PINIO
 }
 
-INLINE void Arduino_SWPAR16::RD_HIGH(void)
-{
-  if (_rd != GFX_NOT_DEFINED)
-  {
-#if defined(USE_FAST_PINIO)
-#if defined(HAS_PORT_SET_CLR)
-#if defined(KINETISK)
-    *_rdPortSet = 1;
-#else  // !KINETISK
-    *_rdPortSet = _rdPinMask;
-#endif // end !KINETISK
-#else  // !HAS_PORT_SET_CLR
-    *_rdPort |= _rdPinMaskSet;
-#endif // end !HAS_PORT_SET_CLR
-#else  // !USE_FAST_PINIO
-    digitalWrite(_rd, HIGH);
-#endif // end !USE_FAST_PINIO
-  }
-}
-
-INLINE void Arduino_SWPAR16::RD_LOW(void)
-{
-  if (_rd != GFX_NOT_DEFINED)
-  {
-#if defined(USE_FAST_PINIO)
-#if defined(HAS_PORT_SET_CLR)
-#if defined(KINETISK)
-    *_rdPortClr = 1;
-#else  // !KINETISK
-    *_rdPortClr = _rdPinMask;
-#endif // end !KINETISK
-#else  // !HAS_PORT_SET_CLR
-    *_rdPort &= _rdPinMaskClr;
-#endif // end !HAS_PORT_SET_CLR
-#else  // !USE_FAST_PINIO
-    digitalWrite(_rd, LOW);
-#endif // end !USE_FAST_PINIO
-  }
-}
-
-INLINE void Arduino_SWPAR16::D0_HIGH(void)
+GFX_INLINE void Arduino_SWPAR16::D0_HIGH(void)
 {
 #if defined(USE_FAST_PINIO)
 #if defined(HAS_PORT_SET_CLR)
@@ -1313,7 +1295,7 @@ INLINE void Arduino_SWPAR16::D0_HIGH(void)
 #endif // end !USE_FAST_PINIO
 }
 
-INLINE void Arduino_SWPAR16::D0_LOW(void)
+GFX_INLINE void Arduino_SWPAR16::D0_LOW(void)
 {
 #if defined(USE_FAST_PINIO)
 #if defined(HAS_PORT_SET_CLR)
@@ -1330,7 +1312,7 @@ INLINE void Arduino_SWPAR16::D0_LOW(void)
 #endif // end !USE_FAST_PINIO
 }
 
-INLINE void Arduino_SWPAR16::D1_HIGH(void)
+GFX_INLINE void Arduino_SWPAR16::D1_HIGH(void)
 {
 #if defined(USE_FAST_PINIO)
 #if defined(HAS_PORT_SET_CLR)
@@ -1347,7 +1329,7 @@ INLINE void Arduino_SWPAR16::D1_HIGH(void)
 #endif // end !USE_FAST_PINIO
 }
 
-INLINE void Arduino_SWPAR16::D1_LOW(void)
+GFX_INLINE void Arduino_SWPAR16::D1_LOW(void)
 {
 #if defined(USE_FAST_PINIO)
 #if defined(HAS_PORT_SET_CLR)
@@ -1364,7 +1346,7 @@ INLINE void Arduino_SWPAR16::D1_LOW(void)
 #endif // end !USE_FAST_PINIO
 }
 
-INLINE void Arduino_SWPAR16::D2_HIGH(void)
+GFX_INLINE void Arduino_SWPAR16::D2_HIGH(void)
 {
 #if defined(USE_FAST_PINIO)
 #if defined(HAS_PORT_SET_CLR)
@@ -1381,7 +1363,7 @@ INLINE void Arduino_SWPAR16::D2_HIGH(void)
 #endif // end !USE_FAST_PINIO
 }
 
-INLINE void Arduino_SWPAR16::D2_LOW(void)
+GFX_INLINE void Arduino_SWPAR16::D2_LOW(void)
 {
 #if defined(USE_FAST_PINIO)
 #if defined(HAS_PORT_SET_CLR)
@@ -1398,7 +1380,7 @@ INLINE void Arduino_SWPAR16::D2_LOW(void)
 #endif // end !USE_FAST_PINIO
 }
 
-INLINE void Arduino_SWPAR16::D3_HIGH(void)
+GFX_INLINE void Arduino_SWPAR16::D3_HIGH(void)
 {
 #if defined(USE_FAST_PINIO)
 #if defined(HAS_PORT_SET_CLR)
@@ -1415,7 +1397,7 @@ INLINE void Arduino_SWPAR16::D3_HIGH(void)
 #endif // end !USE_FAST_PINIO
 }
 
-INLINE void Arduino_SWPAR16::D3_LOW(void)
+GFX_INLINE void Arduino_SWPAR16::D3_LOW(void)
 {
 #if defined(USE_FAST_PINIO)
 #if defined(HAS_PORT_SET_CLR)
@@ -1432,7 +1414,7 @@ INLINE void Arduino_SWPAR16::D3_LOW(void)
 #endif // end !USE_FAST_PINIO
 }
 
-INLINE void Arduino_SWPAR16::D4_HIGH(void)
+GFX_INLINE void Arduino_SWPAR16::D4_HIGH(void)
 {
 #if defined(USE_FAST_PINIO)
 #if defined(HAS_PORT_SET_CLR)
@@ -1449,7 +1431,7 @@ INLINE void Arduino_SWPAR16::D4_HIGH(void)
 #endif // end !USE_FAST_PINIO
 }
 
-INLINE void Arduino_SWPAR16::D4_LOW(void)
+GFX_INLINE void Arduino_SWPAR16::D4_LOW(void)
 {
 #if defined(USE_FAST_PINIO)
 #if defined(HAS_PORT_SET_CLR)
@@ -1466,7 +1448,7 @@ INLINE void Arduino_SWPAR16::D4_LOW(void)
 #endif // end !USE_FAST_PINIO
 }
 
-INLINE void Arduino_SWPAR16::D5_HIGH(void)
+GFX_INLINE void Arduino_SWPAR16::D5_HIGH(void)
 {
 #if defined(USE_FAST_PINIO)
 #if defined(HAS_PORT_SET_CLR)
@@ -1483,7 +1465,7 @@ INLINE void Arduino_SWPAR16::D5_HIGH(void)
 #endif // end !USE_FAST_PINIO
 }
 
-INLINE void Arduino_SWPAR16::D5_LOW(void)
+GFX_INLINE void Arduino_SWPAR16::D5_LOW(void)
 {
 #if defined(USE_FAST_PINIO)
 #if defined(HAS_PORT_SET_CLR)
@@ -1500,7 +1482,7 @@ INLINE void Arduino_SWPAR16::D5_LOW(void)
 #endif // end !USE_FAST_PINIO
 }
 
-INLINE void Arduino_SWPAR16::D6_HIGH(void)
+GFX_INLINE void Arduino_SWPAR16::D6_HIGH(void)
 {
 #if defined(USE_FAST_PINIO)
 #if defined(HAS_PORT_SET_CLR)
@@ -1517,7 +1499,7 @@ INLINE void Arduino_SWPAR16::D6_HIGH(void)
 #endif // end !USE_FAST_PINIO
 }
 
-INLINE void Arduino_SWPAR16::D6_LOW(void)
+GFX_INLINE void Arduino_SWPAR16::D6_LOW(void)
 {
 #if defined(USE_FAST_PINIO)
 #if defined(HAS_PORT_SET_CLR)
@@ -1534,7 +1516,7 @@ INLINE void Arduino_SWPAR16::D6_LOW(void)
 #endif // end !USE_FAST_PINIO
 }
 
-INLINE void Arduino_SWPAR16::D7_HIGH(void)
+GFX_INLINE void Arduino_SWPAR16::D7_HIGH(void)
 {
 #if defined(USE_FAST_PINIO)
 #if defined(HAS_PORT_SET_CLR)
@@ -1551,7 +1533,7 @@ INLINE void Arduino_SWPAR16::D7_HIGH(void)
 #endif // end !USE_FAST_PINIO
 }
 
-INLINE void Arduino_SWPAR16::D7_LOW(void)
+GFX_INLINE void Arduino_SWPAR16::D7_LOW(void)
 {
 #if defined(USE_FAST_PINIO)
 #if defined(HAS_PORT_SET_CLR)
@@ -1568,7 +1550,7 @@ INLINE void Arduino_SWPAR16::D7_LOW(void)
 #endif // end !USE_FAST_PINIO
 }
 
-INLINE void Arduino_SWPAR16::D8_HIGH(void)
+GFX_INLINE void Arduino_SWPAR16::D8_HIGH(void)
 {
 #if defined(USE_FAST_PINIO)
 #if defined(HAS_PORT_SET_CLR)
@@ -1585,7 +1567,7 @@ INLINE void Arduino_SWPAR16::D8_HIGH(void)
 #endif // end !USE_FAST_PINIO
 }
 
-INLINE void Arduino_SWPAR16::D8_LOW(void)
+GFX_INLINE void Arduino_SWPAR16::D8_LOW(void)
 {
 #if defined(USE_FAST_PINIO)
 #if defined(HAS_PORT_SET_CLR)
@@ -1602,7 +1584,7 @@ INLINE void Arduino_SWPAR16::D8_LOW(void)
 #endif // end !USE_FAST_PINIO
 }
 
-INLINE void Arduino_SWPAR16::D9_HIGH(void)
+GFX_INLINE void Arduino_SWPAR16::D9_HIGH(void)
 {
 #if defined(USE_FAST_PINIO)
 #if defined(HAS_PORT_SET_CLR)
@@ -1619,7 +1601,7 @@ INLINE void Arduino_SWPAR16::D9_HIGH(void)
 #endif // end !USE_FAST_PINIO
 }
 
-INLINE void Arduino_SWPAR16::D9_LOW(void)
+GFX_INLINE void Arduino_SWPAR16::D9_LOW(void)
 {
 #if defined(USE_FAST_PINIO)
 #if defined(HAS_PORT_SET_CLR)
@@ -1636,7 +1618,7 @@ INLINE void Arduino_SWPAR16::D9_LOW(void)
 #endif // end !USE_FAST_PINIO
 }
 
-INLINE void Arduino_SWPAR16::D10_HIGH(void)
+GFX_INLINE void Arduino_SWPAR16::D10_HIGH(void)
 {
 #if defined(USE_FAST_PINIO)
 #if defined(HAS_PORT_SET_CLR)
@@ -1653,7 +1635,7 @@ INLINE void Arduino_SWPAR16::D10_HIGH(void)
 #endif // end !USE_FAST_PINIO
 }
 
-INLINE void Arduino_SWPAR16::D10_LOW(void)
+GFX_INLINE void Arduino_SWPAR16::D10_LOW(void)
 {
 #if defined(USE_FAST_PINIO)
 #if defined(HAS_PORT_SET_CLR)
@@ -1670,7 +1652,7 @@ INLINE void Arduino_SWPAR16::D10_LOW(void)
 #endif // end !USE_FAST_PINIO
 }
 
-INLINE void Arduino_SWPAR16::D11_HIGH(void)
+GFX_INLINE void Arduino_SWPAR16::D11_HIGH(void)
 {
 #if defined(USE_FAST_PINIO)
 #if defined(HAS_PORT_SET_CLR)
@@ -1687,7 +1669,7 @@ INLINE void Arduino_SWPAR16::D11_HIGH(void)
 #endif // end !USE_FAST_PINIO
 }
 
-INLINE void Arduino_SWPAR16::D11_LOW(void)
+GFX_INLINE void Arduino_SWPAR16::D11_LOW(void)
 {
 #if defined(USE_FAST_PINIO)
 #if defined(HAS_PORT_SET_CLR)
@@ -1704,7 +1686,7 @@ INLINE void Arduino_SWPAR16::D11_LOW(void)
 #endif // end !USE_FAST_PINIO
 }
 
-INLINE void Arduino_SWPAR16::D12_HIGH(void)
+GFX_INLINE void Arduino_SWPAR16::D12_HIGH(void)
 {
 #if defined(USE_FAST_PINIO)
 #if defined(HAS_PORT_SET_CLR)
@@ -1721,7 +1703,7 @@ INLINE void Arduino_SWPAR16::D12_HIGH(void)
 #endif // end !USE_FAST_PINIO
 }
 
-INLINE void Arduino_SWPAR16::D12_LOW(void)
+GFX_INLINE void Arduino_SWPAR16::D12_LOW(void)
 {
 #if defined(USE_FAST_PINIO)
 #if defined(HAS_PORT_SET_CLR)
@@ -1738,7 +1720,7 @@ INLINE void Arduino_SWPAR16::D12_LOW(void)
 #endif // end !USE_FAST_PINIO
 }
 
-INLINE void Arduino_SWPAR16::D13_HIGH(void)
+GFX_INLINE void Arduino_SWPAR16::D13_HIGH(void)
 {
 #if defined(USE_FAST_PINIO)
 #if defined(HAS_PORT_SET_CLR)
@@ -1755,7 +1737,7 @@ INLINE void Arduino_SWPAR16::D13_HIGH(void)
 #endif // end !USE_FAST_PINIO
 }
 
-INLINE void Arduino_SWPAR16::D13_LOW(void)
+GFX_INLINE void Arduino_SWPAR16::D13_LOW(void)
 {
 #if defined(USE_FAST_PINIO)
 #if defined(HAS_PORT_SET_CLR)
@@ -1772,7 +1754,7 @@ INLINE void Arduino_SWPAR16::D13_LOW(void)
 #endif // end !USE_FAST_PINIO
 }
 
-INLINE void Arduino_SWPAR16::D14_HIGH(void)
+GFX_INLINE void Arduino_SWPAR16::D14_HIGH(void)
 {
 #if defined(USE_FAST_PINIO)
 #if defined(HAS_PORT_SET_CLR)
@@ -1789,7 +1771,7 @@ INLINE void Arduino_SWPAR16::D14_HIGH(void)
 #endif // end !USE_FAST_PINIO
 }
 
-INLINE void Arduino_SWPAR16::D14_LOW(void)
+GFX_INLINE void Arduino_SWPAR16::D14_LOW(void)
 {
 #if defined(USE_FAST_PINIO)
 #if defined(HAS_PORT_SET_CLR)
@@ -1806,7 +1788,7 @@ INLINE void Arduino_SWPAR16::D14_LOW(void)
 #endif // end !USE_FAST_PINIO
 }
 
-INLINE void Arduino_SWPAR16::D15_HIGH(void)
+GFX_INLINE void Arduino_SWPAR16::D15_HIGH(void)
 {
 #if defined(USE_FAST_PINIO)
 #if defined(HAS_PORT_SET_CLR)
@@ -1823,7 +1805,7 @@ INLINE void Arduino_SWPAR16::D15_HIGH(void)
 #endif // end !USE_FAST_PINIO
 }
 
-INLINE void Arduino_SWPAR16::D15_LOW(void)
+GFX_INLINE void Arduino_SWPAR16::D15_LOW(void)
 {
 #if defined(USE_FAST_PINIO)
 #if defined(HAS_PORT_SET_CLR)

@@ -28,7 +28,7 @@
 #define GIF_FILENAME "/city17_240.gif"
 
 /*******************************************************************************
- * Start of Arduino_G FX setting
+ * Start of Arduino_GFX setting
  *
  * Arduino_GFX try to find the settings depends on selected board in Arduino IDE
  * Or you can define the display dev kit not in the board list
@@ -72,7 +72,7 @@ Arduino_Canvas_Indexed *canvasGfx = new Arduino_Canvas_Indexed(320 /* width */, 
 #if defined(ARDUINO_ARCH_SAMD) && defined(SEEED_GROVE_UI_WIRELESS)
 #include <Seeed_FS.h>
 #include <SD/Seeed_SD.h>
-#elif defined(TARGET_RP2040)
+#elif defined(TARGET_RP2040) || defined(PICO_RP2350)
 #include <LittleFS.h>
 #include <SD.h>
 #elif defined(ESP32)
@@ -108,21 +108,21 @@ unsigned long nextSnap = 0;
 
 void setup()
 {
+#ifdef DEV_DEVICE_INIT
+  DEV_DEVICE_INIT();
+#endif
+
   Serial.begin(115200);
   // Serial.setDebugOutput(true);
   // while(!Serial);
-  Serial.println("GIF Sprite Demo");
-
-#ifdef GFX_EXTRA_PRE_INIT
-  GFX_EXTRA_PRE_INIT();
-#endif
+  Serial.println("Arduino_GFX GIF Sprite example");
 
   // Init Display
   if (!canvasGfx->begin())
   {
     Serial.println("canvasGfx->begin() failed!");
   }
-  canvasGfx->fillScreen(BLACK);
+  canvasGfx->fillScreen(RGB565_BLACK);
   canvasGfx->flush();
   canvasGfx->setDirectUseColorIndex(true);
 
@@ -134,7 +134,7 @@ void setup()
 /* Wio Terminal */
 #if defined(ARDUINO_ARCH_SAMD) && defined(SEEED_GROVE_UI_WIRELESS)
   if (!SD.begin(SDCARD_SS_PIN, SDCARD_SPI, 4000000UL))
-#elif defined(TARGET_RP2040)
+#elif defined(TARGET_RP2040) || defined(PICO_RP2350)
   if (!LittleFS.begin())
   // if (!SD.begin(SS))
 #elif defined(ESP32)
@@ -157,7 +157,7 @@ void setup()
 /* Wio Terminal */
 #if defined(ARDUINO_ARCH_SAMD) && defined(SEEED_GROVE_UI_WIRELESS)
   File gifFile = SD.open(GIF_FILENAME, "r");
-#elif defined(TARGET_RP2040)
+#elif defined(TARGET_RP2040) || defined(PICO_RP2350)
   File gifFile = LittleFS.open(GIF_FILENAME, "r");
   // File gifFile = SD.open(GIF_FILENAME, "r");
 #elif defined(ESP32)

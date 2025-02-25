@@ -42,8 +42,7 @@ void Arduino_ST7796::setRotation(uint8_t r)
     break;
   }
   _bus->beginWrite();
-  _bus->writeCommand(ST7796_MADCTL);
-  _bus->write(r);
+  _bus->writeC8D8(ST7796_MADCTL, r);
   _bus->endWrite();
 }
 
@@ -61,7 +60,7 @@ void Arduino_ST7796::writeAddrWindow(int16_t x, int16_t y, uint16_t w, uint16_t 
   {
     _currentY = y;
     _currentH = h;
-    x += _yStart;
+    y += _yStart;
     _bus->writeC8D16D16(ST7796_RASET, y, y + h - 1);
   }
 

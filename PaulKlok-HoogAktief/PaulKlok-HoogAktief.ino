@@ -180,7 +180,7 @@ void timeavailable(struct timeval *t)
   Serial << "Got time adjustment from NTP in " << millis() << " ms!\n";
 }
 
-bool IRAM_ATTR onClock(void) {
+void IRAM_ATTR onClock(void) {
   static int  digit; 
 
   if (++ms>=6000) ms=0;
@@ -192,8 +192,7 @@ bool IRAM_ATTR onClock(void) {
   WRITE_PERI_REG(GPIO_OUT_W1TS_REG, rawPos[digit]);    // enable common anode
 
   timerRestart(PW);
-  timerAlarmWrite(PW, pwDigits, false); // 100 us timer, no auto reload.
-  timerAlarmEnable(PW);
+  timerAlarm(PW, pwDigits, false, 0); // 100 us timer, no auto reload.
 
   WRITE_PERI_REG(GPIO_OUT_W1TC_REG, rawCharlieOff);           // disable all ('seconds')-LEDS data ...
   WRITE_PERI_REG(GPIO_ENABLE_W1TC_REG, rawCharlieOff);        // ... and Output Enable
@@ -203,25 +202,20 @@ bool IRAM_ATTR onClock(void) {
     WRITE_PERI_REG(GPIO_ENABLE_W1TS_REG, rawCharlieOE[charlieLEDs[digit]]); // ... and Output Enable
 
     timerRestart(PWCharlie);
-    timerAlarmWrite(PWCharlie, pwLEDs[digit], false); // 100 us timer, no auto reload.
-    timerAlarmEnable(PWCharlie);
+    timerAlarm(PWCharlie, pwLEDs[digit], false, 0); // 100 us timer, no auto reload.
   }
-
-  return false; // do not perform task switch. We handled all.
 }
 
 
-bool IRAM_ATTR onPW(void) {
+void IRAM_ATTR onPW(void) {
   WRITE_PERI_REG(GPIO_OUT_W1TC_REG, rawPosOff);        // disable all digits, Common Anode, high active
   WRITE_PERI_REG(GPIO_OUT_W1TC_REG, rawSegmentsOff);   // disble all segments, low active
-  return false; // do not perform task switch. We handled all.
 }
 
 
-bool IRAM_ATTR onPWCharlie(void) {
+void IRAM_ATTR onPWCharlie(void) {
   WRITE_PERI_REG(GPIO_OUT_W1TC_REG,    rawCharlieOff);        // disable all ('seconds')-LEDS data ...
   WRITE_PERI_REG(GPIO_ENABLE_W1TC_REG, rawCharlieOff);        // ... and Output Enable
-  return false; // do not perform task switch. We handled all.
 }
 
 
@@ -260,21 +254,18 @@ void setup()
 }
 
   // Initialize timer
-  Clock = timerBegin(0, 40, true);  // 1 MHz repeating timer. Channel 0, prescaler 80, count up.
-  timerAttachInterrupt(Clock, (void (*)())onClock, false);
-  timerAlarmWrite(Clock, 1000, true); // 1 ms timer, auto reload.
-  timerAlarmEnable(Clock);
+  Clock = timerBegin(2'000'000);  // 2 MHz repeating timer. Channel 0, prescaler 40, count up.
+  timerAttachInterrupt(Clock, onClock);
+  timerAlarm(Clock, 1000); // 0.5 ms timer, auto reload.
 
-  PW = timerBegin(1, 40, true);  // Pulse width timer. Channel 1, prescaler 80, count up.
-  timerAttachInterrupt(PW, (void (*)())onPW, false);
-  timerAlarmWrite(PW, 100, false); 
-  timerAlarmEnable(PW);
+  PW = timerBegin(2'000'000);  // Pulse width timer. Channel 1, prescaler 40, count up.
+  timerAttachInterrupt(PW, onPW);
+  timerAlarm(PW, 100); 
 
-  PWCharlie = timerBegin(3, 40, true);  // Pulse width timer. Channel 2, prescaler 80, count up.
+  PWCharlie = timerBegin(2'000'000);  // Pulse width timer. Channel 2, prescaler 80, count up.
   timerAttachInterrupt(PWCharlie, (void (*)())onPWCharlie, false);
-  timerAlarmWrite(PWCharlie, 100, false); // 100 us timer, no auto reload.
-  timerAlarmEnable(PWCharlie);
-
+  timerAlarm(PWCharlie, 100); // 100 us timer, no auto reload.
+ 
   delay(500);
   print7Seg(_c,_o,_n,_n);
   wifiManager.setAPCallback(configModeCallback);

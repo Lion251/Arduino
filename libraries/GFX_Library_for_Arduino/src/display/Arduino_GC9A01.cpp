@@ -57,8 +57,7 @@ void Arduino_GC9A01::setRotation(uint8_t r)
     break;
   }
   _bus->beginWrite();
-  _bus->writeCommand(GC9A01_MADCTL);
-  _bus->write(r);
+  _bus->writeC8D8(GC9A01_MADCTL, r);
   _bus->endWrite();
 }
 
@@ -85,7 +84,7 @@ void Arduino_GC9A01::tftInit()
   {
     pinMode(_rst, OUTPUT);
     digitalWrite(_rst, HIGH);
-    delay(100);
+    delay(GC9A01_RST_DELAY);
     digitalWrite(_rst, LOW);
     delay(GC9A01_RST_DELAY);
     digitalWrite(_rst, HIGH);

@@ -331,24 +331,24 @@ void WiFiSettingsClass::portal() {
             "<select name=ssid onchange=\"document.getElementsByName('password')[0].value=''\">"
         ));
 
-        String current = slurp("/wifi-ssid");
+        ssid = slurp("/wifi-ssid");
         bool found = false;
         for (int i = 0; i < num_networks; i++) {
             String opt = F("<option value='{ssid}'{sel}>{ssid} {lock} {1x}</option>");
-            String ssid = WiFi.SSID(i);
+            String s = WiFi.SSID(i);
             wifi_auth_mode_t mode = WiFi.encryptionType(i);
 
-            opt.replace("{sel}",  ssid == current && !found ? " selected" : "");
-            opt.replace("{ssid}", html_entities(ssid));
+            opt.replace("{sel}",  s == ssid && !found ? " selected" : "");
+            opt.replace("{ssid}", html_entities(s));
             opt.replace("{lock}", mode != WIFI_AUTH_OPEN ? "&#x1f512;" : "");
             opt.replace("{1x}",   mode == WIFI_AUTH_WPA2_ENTERPRISE ? _WSL_T.dot1x : F(""));
             http.sendContent(opt);
 
-            if (ssid == current) found = true;
+            if (s == ssid) found = true;
         }
-        if (!found && current.length()) {
+        if (!found && ssid.length()) {
             String opt = F("<option value='{ssid}' selected>{ssid} (&#x26a0; not in range)</option>");
-            opt.replace("{ssid}", html_entities(current));
+            opt.replace("{ssid}", html_entities(ssid));
             http.sendContent(opt);
         }
 
@@ -453,9 +453,7 @@ void WiFiSettingsClass::portal() {
 bool WiFiSettingsClass::connect(bool portal, int wait_seconds) {
     begin();
 
-    WiFi.mode(WIFI_STA);
-
-    String ssid = slurp("/wifi-ssid");
+    ssid = slurp("/wifi-ssid");
     String pw = slurp("/wifi-password");
     if (ssid.length() == 0) {
         Serial.println(F("First contact!\n"));
@@ -466,9 +464,13 @@ bool WiFiSettingsClass::connect(bool portal, int wait_seconds) {
     Serial.print(ssid);
     if (onConnect) onConnect();
 
-    WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE);  // arduino-esp32 #2537
     WiFi.setHostname(hostname.c_str());
     WiFi.begin(ssid.c_str(), pw.c_str());
+    WiFi.setHostname(hostname.c_str());
+    WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE);  // arduino-esp32 #2537
+    WiFi.setHostname(hostname.c_str());
+    WiFi.mode(WIFI_STA);  // arduino-esp32 #6278
+    WiFi.setHostname(hostname.c_str());
 
     unsigned long starttime = millis();
     while (WiFi.status() != WL_CONNECTED && (wait_seconds < 0 || (millis() - starttime) < (unsigned)wait_seconds * 1000)) {

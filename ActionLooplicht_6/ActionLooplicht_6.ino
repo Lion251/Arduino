@@ -1,4 +1,7 @@
-byte const pinList[6] = { 5, 9, 6, 11, 10, 3 };
+#include <DoubleResetDetect.h>
+
+//byte const pinList[6] = { 5, 9, 6, 11, 10, 3 }; // Paul
+byte const pinList[6] = { 3, 5, 6, 9, 10, 11 }; // Henk
 
 #define x1  pinList[0]
 #define x2  pinList[1]

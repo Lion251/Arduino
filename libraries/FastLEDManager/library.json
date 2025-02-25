@@ -13,8 +13,15 @@
         "url": "https://github.com/hideakitai",
         "maintainer": true
     },
-    "version": "0.1.5",
+    "version": "0.2.1",
     "license": "MIT",
     "frameworks": "arduino",
-    "platforms": "*"
+    "platforms": "*",
+    "dependencies":
+    {
+        "hideakitai/DebugLog": "*",
+        "hideakitai/FastLED": "*",
+        "hideakitai/TaskManager": "*",
+        "hideakitai/Tween": "*"
+    }
 }

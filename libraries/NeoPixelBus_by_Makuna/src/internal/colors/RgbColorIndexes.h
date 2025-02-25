@@ -5,7 +5,7 @@ RgbColorIndexes provides constants for color element vector access on
 Written by Michael C. Miller.
 
 I invest time and resources providing this open source code,
-please support me by dontating (see https://github.com/Makuna/NeoPixelBus)
+please support me by donating (see https://github.com/Makuna/NeoPixelBus)
 
 -------------------------------------------------------------------------
 This file is part of the Makuna/NeoPixelBus library.
@@ -33,3 +33,6 @@ const uint8_t ColorIndexB = 2;
 const uint8_t ColorIndexW = 3;
 const uint8_t ColorIndexWW = 3; // warmer white
 const uint8_t ColorIndexCW = 4; // cooler white
+const uint8_t ColorIndexW1 = 3;
+const uint8_t ColorIndexW2 = 4;
+const uint8_t ColorIndexW3 = 5; 
