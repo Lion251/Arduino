@@ -18,14 +18,14 @@
 #define LX_INTR_A2_OFFSET 4
 #define LX_INTR_A3_OFFSET 8
     .data
-_lx_intr_stack:
+_lx_intr_stackxxx:
     .space      LX_INTR_STACK_SIZE
 
     .section .iram1,"ax"
     .global     xt_highint4
     .type       xt_highint4,@function
     .align      4
-xt_highint4:
+xt_highint4xxx:
 
     movi    a0, _lx_intr_stack // assuming a0 saved restored by EXCSAVE_5 at the end of this
     s32i    a1, a0, LX_INTR_A1_OFFSET
@@ -59,5 +59,5 @@ xt_highint4:
     rsr     a0, EXCSAVE_4 // restore a0
     rfi     4
 
-    .global ld_include_xt_highint
-ld_include_xt_highint:
+    .global ld_include_xt_highintxxx
+ld_include_xt_highintxxx:

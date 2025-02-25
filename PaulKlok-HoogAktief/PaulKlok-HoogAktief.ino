@@ -256,15 +256,15 @@ void setup()
   // Initialize timer
   Clock = timerBegin(2'000'000);  // 2 MHz repeating timer. Channel 0, prescaler 40, count up.
   timerAttachInterrupt(Clock, onClock);
-  timerAlarm(Clock, 1000); // 0.5 ms timer, auto reload.
+  timerAlarm(Clock, 1000, true, 0); // 0.5 ms timer, auto reload.
 
   PW = timerBegin(2'000'000);  // Pulse width timer. Channel 1, prescaler 40, count up.
   timerAttachInterrupt(PW, onPW);
-  timerAlarm(PW, 100); 
+  timerAlarm(PW, 100, false, 0); 
 
   PWCharlie = timerBegin(2'000'000);  // Pulse width timer. Channel 2, prescaler 80, count up.
-  timerAttachInterrupt(PWCharlie, (void (*)())onPWCharlie, false);
-  timerAlarm(PWCharlie, 100); // 100 us timer, no auto reload.
+  timerAttachInterrupt(PWCharlie, onPWCharlie);
+  timerAlarm(PWCharlie, 100, false, 0); // 100 us timer, no auto reload.
  
   delay(500);
   print7Seg(_c,_o,_n,_n);
