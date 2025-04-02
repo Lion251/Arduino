@@ -1,4 +1,13 @@
-FastLED 3.9.13 (Upcoming Release)
+FastLED 3.9.14
+==============
+* Attiny13 and Attiny4343 now works
+  * https://github.com/FastLED/FastLED/pull/1874
+  * Thanks https://github.com/sutaburosu!
+* Arduino GIGA Now working
+  * Thank you [@RubixCubix!](https://github.com/RubiCubix)
+* Fix for mqtt build modes: https://github.com/FastLED/FastLED/issues/1884
+
+FastLED 3.9.13
 ==============
 * HD107(s) and HD mode are now availabe in FastLED.
   * See example HD107.ino
