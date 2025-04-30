@@ -10,7 +10,7 @@
 
 #define LED_PIN     14
 #define NUM_LEDS    (MAX_X * MAX_Y)
-#define BRIGHTNESS  128
+#define BRIGHTNESS  255
 #define LED_TYPE    WS2811
 #define COLOR_ORDER RGB
 CRGB leds[NUM_LEDS];
@@ -126,7 +126,7 @@ void diffuse(void) {
       for (int i=0; i<3; i++) {
         temp[y][x][i] = ( board[y-1][x-1][i]*3/2 +                     2*board[y-1][x][i] + board[y-1][x+1][i]*3/2
                         + board[y  ][x-1][i]*2   + (DIFFUSE_CONSTANT-14)*board[y  ][x][i] + board[y  ][x+1][i]*2
-                        + board[y+1][x-1][i]*3/2 +                     2*board[y+1][x][i] + board[y+1][x+1][i]*3/2) * 250 / (DIFFUSE_CONSTANT*256);
+                        + board[y+1][x-1][i]*3/2 +                     2*board[y+1][x][i] + board[y+1][x+1][i]*3/2) * 246 / (DIFFUSE_CONSTANT*256);
       }
     }
   }
